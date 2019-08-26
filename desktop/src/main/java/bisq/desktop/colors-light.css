@@ -1,126 +1,92 @@
 .root {
-    -bs-very-dark-grey3: #444; /* 3 usages */
-    -bs-grey: #666666; /* 8 usages */
-    -bs-medium-grey: #AAAAAA; /* 8 usages */
-    -bs-bg-grey: #dddddd; /* 25 usages */
-    -bs-bg-grey2: #bbb; /* 1 usages */
-    -bs-bg-grey3: #d3d3d3; /* 1 usages */
-    -bs-light-grey: #cccccc; /* derive(-bs-rd-white, -20%); 13 usages */
-    -bs-content-bg-grey: #f4f4f4; /* 14 usages */
-    -bs-very-light-grey: #f8f8f8; /* 10 usages */
-    -bs-bg-light: #FAFAFA; /* derive(-bs-rd-white, -2%) 4 usages */
-    -bs-very-light-grey: #F0F0F0; /* derive(-bs-rd-white, -6%) 10 usages */
-    -bs-very-dark-grey: #3c3c3c; /* 8 usages */
-    -bs-very-dark-grey2: #111; /* 1 usages */
-    -bs-black-transparent: rgba(0, 0, 0, 0.5); /* 1 usages */
-    -bs-light-grey2: #cfcfcf; /* 2 usages */
-    -bs-light-grey3: #b5b5b5; /* 1 usages */
-    -bs-font-dark: #333; /* 11 usages */
-    -bs-bg-grey7: #e0e0e0; /* 2 usages */
-    -bs-bg-grey9: #fcfcfc; /* 1 usages */
-    -bs-bg-grey10: #e5e5e5; /* 1 usages */
-    -bs-bg-grey11: #f1f1f1; /* 1 usages */
-    -bs-dark-grey: #555; /* 8 usages */
-    -bs-dim-grey: #696969; /* 1 usages */
-    -bs-very-dark-grey3: #333000; /* 3 usages */
-
-    -bs-soft-red: #ee6664; /* 1 usages */
-    -bs-pink: #ff8986; /* 2 usages */
-    -bs-orange: #ff8a2b; /* 2 usages */
-    -bs-orange2: #dd6900; /* 1 usages */
-    -bs-yellow: #ffb60f; /* 2 usages */
-    -bs-yellow-light: derive(-bs-yellow, 81%);
-    -bs-bg-grey8: #E1E9E1; /* 1 usages */
-    -bs-bg-green2: #619865; /* 2 usages */
-    -bs-bg-green: #99ba9c; /* 4 usages */
-    -bs-turquoise: #2cacaf; /* 1 usages */
-    -bs-bg-grey5: #f1f6f7; /* 4 usages */
-    -bs-bg-grey6: #e7f5f9; /* 3 usages */
-    -bs-bg-blue2: #6aa4b6; /* 3 usages */
-    -bs-bg-blue1: #b5e1ef; /* 3 usages */
-    -bs-bg-blue4: #57acc9; /* 1 usages */
-    -bs-bg-blue3: #9bbdc9; /* 1 usages */
-    -fx-faint-focus-color: #0f87c322; /* 5 usages */
-    -bs-blue-transparent: #0f87c344;
-    -bs-blue: blue; /* 1 usages */
-
-    /* Redesign colors */
-    -bs-rd-green: #25B135; /* 6 usages */
-    -bs-rd-green-dark: #3EA34A;
-    -bs-rd-nav-selected: #25B135;
+    -bs-green-soft: white;
+    -bs-bg-green: #98b999;
+    -bs-color-green-1: #c4d9c5;
+    -bs-color-green-2: #98b999;
+    -bs-color-green-3: #619864;
+    -bs-color-green-4: #15bc1d;
+    -bs-color-green-5: #2a7e2e;
+    -bs-color-blue-1: #b4e1ee;
+    -bs-color-blue-2: #69a3b5;
+    -bs-color-blue-3: #56adc8;
+    -bs-color-blue-4: #1f8cad;
+    -bs-color-blue-5: #0b4c60;
+    -bs-turquoise: #2cadaf;
+    -bs-blue: #1f8cad;
+    -bs-blue-transparent: rgba(11, 76, 96, 0.27);
+    -bs-yellow: #ffb70f;
+    -bs-yellow-light: #f9d686;
+    -bs-red: #d83431;
+    -bs-red-soft: white;
+    -bs-color-primary: #25b136;
+    -bs-color-primary-dark: #2ea33c;
+    -bs-text-color: #0a0a0a;
+    -bs-background-color: #ffffff;
+    -bs-background-gray: #cfcecf;
+    -bs-color-gray: #373737;
+    -bs-color-gray-11: #1d1d21;
+    -bs-color-gray-10: #2e2e31;
+    -bs-color-gray-6: #504f52;
+    -bs-color-gray-4: #7b7b7c;
+    -bs-color-gray-3: #929293;
+    -bs-color-gray-2: #afaeb0;
+    -bs-color-gray-1: #cfcecf;
+    -bs-color-gray-0: #f2f2f2;
+    -bs-rd-nav-selected: #25b136;
     -bs-rd-nav-deselected: rgba(255, 255, 255, 0.59);
-    -bs-rd-nav-background: #2EA33C;
-    -bs-rd-nav-primary-background: #25B135;
-    -bs-rd-nav-primary-border: #189E27;
-    -bs-rd-grey: #373737;
-    -fx-accent: -bs-rd-green; /* 18 usages */
-
-    /* TODO: refactor all colors to use derive from base colors, to enable easy re-coloring */
-    -bs-rd-white: #ffffff; /* 30 usages */
-    -bs-rd-white-transparent: rgba(255, 255, 255, 0.31);
-    -bs-rd-grey-light: #D8D8D8;
-    -bs-rd-grey-medium-light: #E9E9E9;
-    -bs-rd-grey-very-light: #f8f8f8; /* 10 usages */
-    -bs-rd-grey-background: #F2F2F2;
-    -bs-rd-grey-background-bottom: #f6f6f6; /* 1 usages */
-    -bs-rd-grey-background-dark: #DDDDDD;
-    -bs-rd-grey-background-darker: #D0D0D0;
-    -bs-rd-grey-background-darker-2: #9A9A9A;
-    -bs-rd-grey-background-darkest: #444444;
-    -bs-rd-grey-darker: #E1E1E1;
-    -bs-rd-font-lighter: #A7A7A7;
-    -bs-rd-font-light: #8D8D8D;
-    -bs-rd-font-dark: #4B4B4B;
-    -bs-rd-font-balance: #4F4F4F;
-    -bs-rd-font-balance-label: #8E8E8E;
-    -bs-rd-font-dark-grey: #3c3c3c;
-    -bs-rd-font-confirmation-label: -bs-rd-grey-background-darker-2;
-    -bs-rd-nav-border: #535353;
-    -bs-rd-tab-border: #E2E0E0;
-    -bs-rd-nav-background-dark: #0E0E0E;
-    -bs-rd-black: #000000; /* 13 usages */
-    -bs-rd-black-transparent-dark: rgba(0, 0, 0, 0.54);
-    -bs-rd-black-transparent: rgba(0, 0, 0, 0.2);
-    -bs-rd-grey-line: #979797;
-    -bs-rd-separator: #DBDBDB;
-    -bs-rd-separator-dark: #D5E0D6;
-    -bs-rd-error-red: #dd0000; /* 5 usages */
-    -bs-rd-message-bubble: #0086C6;
-    -bs-toggle-selected: #7B7B7B;
-
-    -bs-red: #D73030; /* 5 usages */
-    -fx-box-border: -bs-rd-grey-medium-light;
-
-    -bs-green-soft: derive(-bs-rd-green, 60%); /* 2 usages */
-    -bs-red-soft: derive(-bs-rd-error-red, 60%); /* 2 usages */
-
-    -bs-warning: -bs-orange; /* 1 usages */
-
-    -bs-buy: -bs-rd-green-dark; /* 12 usages */
-    -bs-buy-focus: derive(-bs-buy, -50%); /* 2 usages */
-    -bs-buy-hover: derive(-bs-buy, -10%); /* 2 usages */
-    -bs-buy-transparent: rgba(62, 163, 74, 0.3); /* 1 usages */
-
-    -bs-sell: -bs-red; /* 11 usages */
-    -bs-sell-focus: derive(-bs-sell, -50%); /* 2 usages */
-    -bs-sell-hover: derive(-bs-sell, -10%); /* 2 usages */
-    -bs-sell-transparent: rgba(215, 48, 48, 0.3); /* 1 usages */
-
-    -bs-volume-transparent: rgba(37, 177, 53, 0.3);
-    -bs-candle-stick-average-line: -bs-rd-green;
-    -bs-candle-stick-loss: #FE3001;
-    -bs-candle-stick-won: #20B221;
-
-    -bs-cancel: -bs-bg-grey; /* 5 usages */
-    -bs-cancel-focus: derive(-bs-cancel, -50%); /* 1 usages */
-    -bs-cancel-hover: derive(-bs-cancel, -10%); /* 1 usages */
-
-    -fx-default-button: derive(-fx-accent, 95%);
-    -fx-focus-color: -fx-accent;
-    -fx-selection-bar: #e1f5e3;
-
+    -bs-rd-nav-background: #2ea33c;
+    -bs-rd-nav-primary-background: #25b136;
+    -bs-rd-nav-primary-border: #44a750;
+    -bs-rd-nav-border: #504f52;
+    -bs-rd-nav-border-color: rgba(255, 255, 255, 0.31);
+    -bs-rd-tab-border: derive(#f2f2f2, -5%);
+    -bs-tab-content-area: #ffffff;
+    -bs-color-gray-background: #f2f2f2;
+    -bs-content-pane-bg-top: #f2f2f2;
+    -bs-content-pane-bg-bottom: derive(#f2f2f2, -2%);
+    -bs-scroll-pane-background: transparent;
+    -bs-tab-content-area: transparent;
+    -bs-viewport-background: transparent;
+    -bs-footer-pane-background: #cfcecf;
+    -bs-footer-pane-text: #1d1d21;
+    -bs-footer-pane-line: #cfcecf;
+    -bs-rd-font-balance: #1d1d21;
+    -bs-rd-font-dark-gray: #2e2e31;
+    -bs-rd-font-dark: #2e2e31;
+    -bs-rd-font-light: #504f52;
+    -bs-rd-font-lighter: #7b7b7c;
+    -bs-rd-font-confirmation-label: #504f52;
+    -bs-rd-font-balance-label: #504f52;
+    -bs-text-color-transparent-dark: rgba(29, 29, 33, 0.54);
+    -bs-text-color-transparent: rgba(29, 29, 33, 0.2);
+    -bs-color-gray-line: #504f52;
+    -bs-rd-separator: #cfcecf;
+    -bs-rd-separator-dark: derive(#f2f2f2, -5%);
+    -bs-rd-error-red: #d83431;
+    -bs-rd-message-bubble: #2cadaf;
+    -bs-toggle-selected: #504f52;
+    -bs-rd-tooltip-truncated: #0a0a0a;
+    -bs-warning: #db6300;
+    -bs-buy: #2ea33c;
+    -bs-buy-focus: black;
+    -bs-buy-hover: #237b2d;
+    -bs-buy-transparent: rgba(46, 163, 60, 0.3);
+    -bs-sell: #ee6563;
+    -bs-sell-focus: #090202;
+    -bs-sell-hover: #b42522;
+    -bs-sell-transparent: rgba(216, 52, 49, 0.3);
+    -bs-volume-transparent: rgba(37, 177, 54, 0.3);
+    -bs-candle-stick-average-line: rgba(21, 188, 29, 0.8);
+    -bs-candle-stick-loss: #ee6563;
+    -bs-candle-stick-won: #15bc1d;
+    -bs-cancel: #cfcecf;
+    -bs-cancel-focus: #504e50;
+    -bs-cancel-hover: #b6b4b6;
+    -fx-accent: #2ea33c;
+    -fx-box-border: #cfcecf;
+    -fx-focus-color: #2ea33c;
+    -fx-faint-focus-color: rgba(11, 76, 96, 0.13);
+    -fx-selection-bar: #c4d9c5;
     -fx-selection-bar-non-focused: -fx-selection-bar;
-
-    -fx-font-size: 13;
-    -fx-font-family: "IBM Plex Sans";
+    -fx-default-button: white;
 }
