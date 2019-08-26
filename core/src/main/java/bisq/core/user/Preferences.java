@@ -122,6 +122,8 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
     @Getter
     private final BooleanProperty useAnimationsProperty = new SimpleBooleanProperty(prefPayload.isUseAnimations());
     @Getter
+    private final BooleanProperty useDarkModeProperty = new SimpleBooleanProperty(prefPayload.isUseDarkMode());
+    @Getter
     private final BooleanProperty useCustomWithdrawalTxFeeProperty = new SimpleBooleanProperty(prefPayload.isUseCustomWithdrawalTxFee());
     @Getter
     private final LongProperty withdrawalTxFeeInBytesProperty = new SimpleLongProperty(prefPayload.getWithdrawalTxFeeInBytes());
@@ -170,6 +172,12 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
         useAnimationsProperty.addListener((ov) -> {
             prefPayload.setUseAnimations(useAnimationsProperty.get());
             GlobalSettings.setUseAnimations(prefPayload.isUseAnimations());
+            persist();
+        });
+
+        useDarkModeProperty.addListener((ov) -> {
+            prefPayload.setUseDarkMode(useDarkModeProperty.get());
+            GlobalSettings.setUseDarkMode(prefPayload.isUseDarkMode());
             persist();
         });
 
@@ -330,6 +338,10 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
 
     public void setUseAnimations(boolean useAnimations) {
         this.useAnimationsProperty.set(useAnimations);
+    }
+
+    public void setUseDarkMode(boolean useDarkMode) {
+        this.useDarkModeProperty.set(useDarkMode);
     }
 
     public void addFiatCurrency(FiatCurrency tradeCurrency) {
@@ -821,6 +833,8 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
         void setTacAccepted(boolean tacAccepted);
 
         void setUseAnimations(boolean useAnimations);
+
+        void setUseDarkMode(boolean useDarkMode);
 
         void setUserLanguage(@NotNull String userLanguageCode);
 
