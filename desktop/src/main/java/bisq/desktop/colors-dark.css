@@ -1,0 +1,137 @@
+.root {
+    -bs-very-dark-grey3: #BBB; /* 3 usages */
+    -bs-grey: #999999; /* 8 usages */
+    -bs-medium-grey: #555555; /* 8 usages */
+    -bs-bg-grey: #222222; /* 25 usages */
+    -bs-bg-grey2: #444; /* 1 usages */
+    -bs-bg-grey3: #2c2c2c; /* 1 usages */
+    -bs-light-grey: #333333; /* derive(-bs-rd-white, -20%); 13 usages */
+    -bs-content-bg-grey: #0b0b0b; /* 14 usages */
+    -bs-very-light-grey: #070707; /* 10 usages */
+    -bs-bg-light: #050505; /* derive(-bs-rd-white, -2%) 4 usages */
+    -bs-very-light-grey: #0F0F0F; /* derive(-bs-rd-white, -6%) 10 usages */
+    -bs-very-dark-grey: #c3c3c3; /* 8 usages */
+    -bs-very-dark-grey2: #EEE; /* 1 usages */
+    -bs-black-transparent: rgba(255, 255, 255, 0.5); /* 1 usages */
+    -bs-light-grey2: #303030; /* 2 usages */
+    -bs-light-grey3: #4a4a4a; /* 1 usages */
+    -bs-font-dark: #CCC; /* 11 usages */
+    -bs-bg-grey7: #1f1f1f; /* 2 usages */
+    -bs-bg-grey9: #030303; /* 1 usages */
+    -bs-bg-grey10: #1a1a1a; /* 1 usages */
+    -bs-bg-grey11: #0e0e0e; /* 1 usages */
+    -bs-dark-grey: #AAA; /* 8 usages */
+    -bs-dim-grey: #969696; /* 1 usages */
+    -bs-very-dark-grey3: #CCCFFF; /* 3 usages */
+
+    -bs-soft-red: #11999b; /* 1 usages */
+    -bs-pink: #007679; /* 2 usages */
+    -bs-orange: #0075d4; /* 2 usages */
+    -bs-orange2: #2296ff; /* 1 usages */
+    -bs-yellow: #0049f0; /* 2 usages */
+    -bs-yellow-light: derive(-bs-yellow, 81%);
+    -bs-bg-grey8: #1E161E; /* 1 usages */
+    -bs-bg-green2: #9E679A; /* 2 usages */
+    -bs-bg-green: #664563; /* 4 usages */
+    -bs-turquoise: #d35350; /* 1 usages */
+    -bs-bg-grey5: #0e0908; /* 4 usages */
+    -bs-bg-grey6: #180a06; /* 3 usages */
+    -bs-bg-blue2: #955b49; /* 3 usages */
+    -bs-bg-blue1: #4a1e10; /* 3 usages */
+    -bs-bg-blue4: #a85336; /* 1 usages */
+    -bs-bg-blue3: #644236; /* 1 usages */
+    -fx-faint-focus-color: #0f87c322; /* 5 usages */
+    -bs-blue-transparent: #0f87c344;
+    -bs-blue: blue; /* 1 usages */
+
+    /* Redesign colors */
+    -bs-rd-green: #25B135; /* 6 usages */
+    -bs-rd-green-dark: #3EA34A;
+    -bs-rd-nav-selected: #25B135;
+    -bs-rd-nav-deselected: rgba(0, 0, 0, 0.59);
+    -bs-rd-nav-background: #2EA33C;
+    -bs-rd-nav-primary-background: #25B135;
+    -bs-rd-nav-primary-border: #E761D8;
+    -bs-rd-grey: #C8C8C8;
+    -fx-accent: -bs-rd-green; /* 18 usages */
+
+    /* Redesign colors */
+    -bs-rd-green: #25B135; /* 6 usages */
+    -bs-rd-green-dark: #3EA34A;
+    -bs-rd-nav-selected: #25B135;
+    -bs-rd-nav-deselected: rgba(255, 255, 255, 0.59);
+    -bs-rd-nav-background: #2EA33C;
+    -bs-rd-nav-primary-background: #25B135;
+    -bs-rd-nav-primary-border: #189E27;
+    -bs-rd-grey: #373737;
+    -fx-accent: -bs-rd-green; /* 18 usages */
+
+    /* TODO: refactor all colors to use derive from base colors, to enable easy re-coloring */
+    -bs-rd-white: #000000; /* 30 usages */
+    -bs-rd-white-transparent: rgba(0, 0, 0, 0.31);
+    -bs-rd-grey-light: #272727;
+    -bs-rd-grey-medium-light: #161616;
+    -bs-rd-grey-very-light: #070707; /* 10 usages */
+    -bs-rd-grey-background: #0D0D0D;
+    -bs-rd-grey-background-bottom: #090909; /* 1 usages */
+    -bs-rd-grey-background-dark: #222222;
+    -bs-rd-grey-background-darker: #2F2F2F;
+    -bs-rd-grey-background-darker-2: #656565;
+    -bs-rd-grey-background-darkest: #BBBBBB;
+    -bs-rd-grey-darker: #1E1E1E;
+    -bs-rd-font-lighter: #585858;
+    -bs-rd-font-light: #727272;
+    -bs-rd-font-dark: #B4B4B4;
+    -bs-rd-font-balance: #B0B0B0;
+    -bs-rd-font-balance-label: #717171;
+    -bs-rd-font-dark-grey: #c3c3c3;
+    -bs-rd-font-confirmation-label: -bs-rd-grey-background-darker-2;
+    -bs-rd-nav-border: #ACACAC;
+    -bs-rd-tab-border: #1D1F1F;
+    -bs-rd-nav-background-dark: #F1F1F1;
+    -bs-rd-black: #FFFFFF; /* 13 usages */
+    -bs-rd-black-transparent-dark: rgba(255, 255, 255, 0.54);
+    -bs-rd-black-transparent: rgba(255, 255, 255, 0.2);
+    -bs-rd-grey-line: #686868;
+    -bs-rd-separator: #242424;
+    -bs-rd-separator-dark: #2A1F29;
+    -bs-rd-error-red: #22ffff; /* 5 usages */
+    -bs-rd-message-bubble: #FF7939;
+    -bs-toggle-selected: #848484;
+
+    -bs-red: #28CFCF; /* 5 usages */
+    -fx-box-border: -bs-rd-grey-medium-light;
+
+    -bs-green-soft: derive(-bs-rd-green, 60%); /* 2 usages */
+    -bs-red-soft: derive(-bs-rd-error-red, 60%); /* 2 usages */
+
+    -bs-warning: -bs-orange; /* 1 usages */
+
+    -bs-buy: -bs-rd-green-dark; /* 12 usages */
+    -bs-buy-focus: derive(-bs-buy, -50%); /* 2 usages */
+    -bs-buy-hover: derive(-bs-buy, -10%); /* 2 usages */
+    -bs-buy-transparent: rgba(193, 92, 181, 0.3); /* 1 usages */
+
+    -bs-sell: -bs-red; /* 11 usages */
+    -bs-sell-focus: derive(-bs-sell, -50%); /* 2 usages */
+    -bs-sell-hover: derive(-bs-sell, -10%); /* 2 usages */
+    -bs-sell-transparent: rgba(40, 207, 207, 0.3); /* 1 usages */
+
+    -bs-volume-transparent: rgba(218, 78, 202, 0.3);
+    -bs-candle-stick-average-line: -bs-rd-green;
+    -bs-candle-stick-loss: #01CFFE;
+    -bs-candle-stick-won: #DF4DDE;
+
+    -bs-cancel: -bs-bg-grey; /* 5 usages */
+    -bs-cancel-focus: derive(-bs-cancel, -50%); /* 1 usages */
+    -bs-cancel-hover: derive(-bs-cancel, -10%); /* 1 usages */
+
+    -fx-default-button: derive(-fx-accent, 95%);
+    -fx-focus-color: -fx-accent;
+    -fx-selection-bar: #1e0a1c;
+
+    -fx-selection-bar-non-focused: -fx-selection-bar;
+
+    -fx-font-size: 13;
+    -fx-font-family: "IBM Plex Sans";
+}
