@@ -1022,6 +1022,10 @@
     -fx-fill: -bs-rd-nav-deselected;
 }
 
+.nav-button-japanese .text {
+    -fx-font-size: 1em;
+}
+
 .nav-button:selected {
     -fx-background-color: -bs-background-color;
     -fx-border-radius: 4;
