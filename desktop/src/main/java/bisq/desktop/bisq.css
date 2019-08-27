@@ -490,7 +490,7 @@
 }
 
 .jfx-button, .action-button {
-    -fx-background-color: -bs-color-gray-2;
+    -fx-background-color: -bs-color-gray-1;
     -fx-text-fill: -bs-rd-font-dark-gray;
     -fx-font-size: 0.923em;
     -fx-font-weight: normal;
@@ -1085,7 +1085,7 @@
 }
 
 .separated-phase-bar-inactive {
-    -fx-text-fill: black;
+    -fx-text-fill: -bs-color-primary-dark;
 }
 
 /*******************************************************************************
@@ -1835,7 +1835,7 @@ textfield */
 }
 
 .dao-news-section-content {
-    -fx-text-fill: -bs-rd-black;
+    -fx-text-fill: -bs-rd-font-dark;
 }
 
 .dao-news-content, .dao-news-section-link, .dao-news-section-link .hyperlink, .dao-launch-version {
@@ -1856,15 +1856,34 @@ textfield */
     -fx-font-size: 1.077em;
 }
 
+.dao-inSync {
+    -fx-text-fill: -bs-rd-green;
+}
+
+.dao-inConflict {
+    -fx-text-fill: -bs-rd-error-red;
+}
+
+.dao-kpi-big {
+    -fx-font-size: 1.923em;
+    -fx-text-fill: -bs-rd-font-dark;
+    -fx-font-family: "IBM Plex Sans Light";
+}
+
+.dao-kpi-subtext {
+    -fx-text-fill: -bs-rd-font-light;
+    -fx-font-size: 0.923em;
+}
+
 .dao-launch-headline {
     -fx-font-size: 2.154em;
-    -fx-text-fill: -bs-rd-font-dark-grey;
+    -fx-text-fill: -bs-rd-font-dark-gray;
     -fx-font-family: "IBM Plex Sans Light";
 }
 
 .dao-launch-description {
     -fx-font-size: 1.538em;
-    -fx-text-fill: -bs-rd-font-dark-grey;
+    -fx-text-fill: -bs-rd-font-dark-gray;
     -fx-font-family: "IBM Plex Sans Light";
 }
 
@@ -1888,7 +1907,7 @@ textfield */
 
 .slider-section-button .text {
     -fx-font-size: 0.923em;
-    -fx-fill: -bs-rd-font-dark-grey;
+    -fx-fill: -bs-rd-font-dark-gray;
     -fx-font-family: "IBM Plex Sans Light";
 }
 
@@ -1907,17 +1926,21 @@ textfield */
  * Market overview                                                                                                  *
  *                                                                                                                  *
  ********************************************************************************************************************/
-#charts .chart-legend {
+.chart-pane {
+    -fx-background-color: -bs-background-color;
+}
+
+#charts .chart-legend, #charts-dao .chart-legend {
     -fx-font-size: 1.077em;
     -fx-alignment: center;
 }
 
-#charts .axis, #price-chart .axis, #volume-chart .axis {
+#charts .axis, #price-chart .axis, #volume-chart .axis, #charts-dao .axis {
     -fx-tick-label-fill: -bs-rd-font-lighter;
     -fx-tick-label-font-size: 0.769em;
 }
 
-#charts .chart-plot-background {
+#charts .chart-plot-background, #charts-dao .chart-plot-background {
     -fx-background-color: -bs-background-color;
 }
 
@@ -1925,7 +1948,7 @@ textfield */
     -fx-background-color: -bs-sell, -bs-background-color;
 }
 
-#charts .default-color1.chart-area-symbol {
+#charts .default-color1.chart-area-symbol, #charts-dao .default-color0.chart-area-symbol {
     -fx-background-color: -bs-buy, -bs-background-color;
 }
 
@@ -1933,7 +1956,7 @@ textfield */
     -fx-stroke: -bs-sell;
 }
 
-#charts .default-color1.chart-series-area-line {
+#charts .default-color1.chart-series-area-line, #charts-dao .default-color0.chart-series-area-line {
     -fx-stroke: -bs-buy;
 }
 
@@ -1941,7 +1964,7 @@ textfield */
     -fx-fill: -bs-sell-transparent;
 }
 
-#charts .default-color1.chart-series-area-fill {
+#charts .default-color1.chart-series-area-fill, #charts-dao .default-color0.chart-series-area-fill {
     -fx-fill: -bs-buy-transparent;
 }
 

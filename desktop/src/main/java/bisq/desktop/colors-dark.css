@@ -1,23 +1,4 @@
 .root {
-    -bs-green-soft: white;
-    -bs-bg-green: #98b999;
-    -bs-color-green-1: #c4d9c5;
-    -bs-color-green-2: #98b999;
-    -bs-color-green-3: #619864;
-    -bs-color-green-4: #15bc1d;
-    -bs-color-green-5: #2a7e2e;
-    -bs-color-blue-1: #b4e1ee;
-    -bs-color-blue-2: #69a3b5;
-    -bs-color-blue-3: #56adc8;
-    -bs-color-blue-4: #1f8cad;
-    -bs-color-blue-5: #0b4c60;
-    -bs-turquoise: #2cadaf;
-    -bs-blue: #1f8cad;
-    -bs-blue-transparent: rgba(11, 76, 96, 0.27);
-    -bs-yellow: #ffb70f;
-    -bs-yellow-light: #f9d686;
-    -bs-red: #d83431;
-    -bs-red-soft: white;
     -bs-color-primary: #25b136;
     -bs-color-primary-dark: #2ea33c;
     -bs-text-color: #afaeb0;
@@ -32,6 +13,8 @@
     -bs-color-gray-2: #504f52;
     -bs-color-gray-1: #2e2e31;
     -bs-color-gray-0: #1d1d21;
+    -bs-rd-green: #25B135;
+    -bs-rd-green-dark: #3EA34A;
     -bs-rd-nav-selected: #25b136;
     -bs-rd-nav-deselected: rgba(46, 46, 49, 0.59);
     -bs-rd-nav-background: #2ea33c;
@@ -92,5 +75,6 @@
 }
 
 .text {
+    -fx-fill: -bs-text-color;
     -fx-text-fill: -bs-text-color;
 }
