@@ -29,6 +29,14 @@
     /*-fx-padding: 3 0 2 0;*/
 }
 
+.table-view .table-row-cell:even .table-cell {
+    -fx-background-color: -bs-background-color;
+}
+
+.table-view .table-row-cell:odd .table-cell {
+    -fx-background-color: derive(-bs-background-color, 5%);
+}
+
 .table-view .table-cell.last-column {
     -fx-alignment: center-right;
     -fx-padding: 2 10 2 0;
@@ -66,6 +74,7 @@
 .number-column.table-cell {
     -fx-font-size: 1em;
     -fx-padding: 0 0 0 0;
+    -fx-background-color: -bs-background-color;
 }
 
 .table-view .filler {
@@ -531,6 +540,23 @@
 .jfx-combo-box > .list-cell {
     -fx-text-fill: -bs-text-color;
     -fx-font-family: "IBM Plex Sans Medium";
+}
+
+.list-view {
+    -fx-background-color: -bs-background-gray;
+}
+.list-view .list-cell {
+    -fx-background-color: -bs-background-color;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: derive(-bs-background-color, -5%);
+}
+.list-view .list-cell:even {
+    -fx-background-color: derive(-bs-background-color, 5%);
+}
+.list-view .list-cell .text {
+    -fx-text-fill: -bs-rd-font-dark-gray;
+    -fx-fill: -bs-rd-font-dark-gray;
 }
 
 .jfx-combo-box > .arrow-button > .arrow {
@@ -1118,6 +1144,14 @@ textfield */
     -fx-max-height: -fx-pref-height;
 }
 
+.jfx-tab-pane .tab-content-area {
+    -fx-background-color: -bs-tab-content-area;
+}
+
+.jfx-tab-pane .viewport {
+    -fx-background-color: -bs-viewport-background;
+}
+
 .jfx-tab-pane .headers-region .tab .tab-container .tab-close-button .jfx-rippler {
     -jfx-rippler-fill: -fx-accent;
 }
@@ -1191,6 +1225,7 @@ textfield */
 .scroll-pane {
     -fx-background-insets: 0;
     -fx-padding: 0;
+    -fx-background-color: -bs-scroll-pane-background;
 }
 
 .scroll-pane:focused {
@@ -1212,7 +1247,7 @@ textfield */
  *                                                                             *
  ******************************************************************************/
 .grid-pane {
-    -fx-background-color: -bs-content-background-gray;
+    -fx-background-color: -bs-background-gray;
     -fx-background-radius: 5;
     -fx-effect: null;
     -fx-effect: dropshadow(gaussian, -bs-color-gray-10, 10, 0, 0, 0);
