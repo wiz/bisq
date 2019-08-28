@@ -18,28 +18,6 @@
     -fx-font-family: "IBM Plex Sans";
 }
 
-.root {
-    -bs-green-soft: white;
-    -bs-bg-green: #98b999;
-    -bs-color-green-1: #c4d9c5;
-    -bs-color-green-2: #98b999;
-    -bs-color-green-3: #619864;
-    -bs-color-green-4: #15bc1d;
-    -bs-color-green-5: #2a7e2e;
-    -bs-color-blue-1: #b4e1ee;
-    -bs-color-blue-2: #69a3b5;
-    -bs-color-blue-3: #56adc8;
-    -bs-color-blue-4: #1f8cad;
-    -bs-color-blue-5: #0b4c60;
-    -bs-turquoise: #2cadaf;
-    -bs-blue: #1f8cad;
-    -bs-blue-transparent: rgba(11, 76, 96, 0.27);
-    -bs-yellow: #ffb70f;
-    -bs-yellow-light: #f9d686;
-    -bs-red: #d83431;
-    -bs-red-soft: white;
-}
-
 /*******************************************************************************
  *                                                                             *
  * Table                                                                       *
@@ -49,14 +27,6 @@
     -fx-alignment: center-left;
     -fx-padding: 2 0 2 0;
     /*-fx-padding: 3 0 2 0;*/
-}
-
-.table-view .table-row-cell:even .table-cell {
-    -fx-background-color: -bs-background-color;
-}
-
-.table-view .table-row-cell:odd .table-cell {
-    -fx-background-color: derive(-bs-background-color, 5%);
 }
 
 .table-view .table-cell.last-column {
@@ -96,7 +66,6 @@
 .number-column.table-cell {
     -fx-font-size: 1em;
     -fx-padding: 0 0 0 0;
-    -fx-background-color: -bs-background-color;
 }
 
 .table-view .filler {
@@ -151,7 +120,7 @@
 
 .table-row-cell {
     -fx-border-width: 0 0 1 0;
-    -fx-border-color: -bs-color-gray-1;
+    -fx-border-color: -bs-color-gray-0;
     -fx-table-cell-border-color: -bs-background-color;
 }
 
@@ -272,13 +241,13 @@
 }
 
 .opaque-icon {
-    -fx-fill: -bs-color-gray-2;
+    -fx-fill: -bs-color-gray-bbb;
     -fx-opacity: 1;
 }
 
 .opaque-icon-character {
     -fx-font-size: 3em;
-    -fx-text-fill: -bs-color-gray-2;
+    -fx-text-fill: -bs-color-gray-bbb;
     -fx-padding: 24 2 0 2;
 }
 
@@ -490,7 +459,7 @@
 }
 
 .jfx-button, .action-button {
-    -fx-background-color: -bs-color-gray-1;
+    -fx-background-color: -bs-color-gray-bbb;
     -fx-text-fill: -bs-rd-font-dark-gray;
     -fx-font-size: 0.923em;
     -fx-font-weight: normal;
@@ -517,6 +486,20 @@
 
 .compact-button, .table-cell .jfx-button, .action-button.compact-button {
     -fx-padding: 0 10 0 10;
+}
+
+.text-button {
+    -fx-background-color: transparent;
+    -fx-underline: true;
+    -fx-padding: 0 10 0 10;
+    -fx-pref-height: 28;
+    -fx-min-height: -fx-pref-height;
+}
+
+.text-button:hover {
+    -fx-text-fill: -bs-text-color;
+    -fx-background-color: transparent;
+    -fx-underline: false;
 }
 
 .jfx-checkbox {
@@ -550,23 +533,6 @@
     -fx-font-family: "IBM Plex Sans Medium";
 }
 
-.list-view {
-    -fx-background-color: -bs-background-gray;
-}
-.list-view .list-cell {
-    -fx-background-color: -bs-background-color;
-}
-.list-view .list-cell:odd {
-    -fx-background-color: derive(-bs-background-color, -5%);
-}
-.list-view .list-cell:even {
-    -fx-background-color: derive(-bs-background-color, 5%);
-}
-.list-view .list-cell .text {
-    -fx-text-fill: -bs-rd-font-dark-gray;
-    -fx-fill: -bs-rd-font-dark-gray;
-}
-
 .jfx-combo-box > .arrow-button > .arrow {
     -fx-background-color: null;
     -fx-border-color: -jfx-unfocus-color;
@@ -582,20 +548,6 @@
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected:hover {
     -fx-background: -fx-accent;
     -fx-background-color: -fx-selection-bar;
-}
-
-.list-view:focused,
-.tree-view:focused,
-.table-view:focused,
-.tree-table-view:focused,
-.table-view:focused,
-.tree-table-view:focused {
-    -fx-background-insets: 0;
-}
-
-.list-view:focused {
-    -fx-background-color: #25b136;
-    -fx-background-insets: 0;
 }
 
 /* Selected rows */
@@ -620,8 +572,7 @@
 
 .jfx-text-field {
     -jfx-focus-color: -bs-color-primary;
-    -fx-background-color: -bs-color-gray-0;
-    -fx-text-fill: -bs-rd-font-dark;
+    -fx-background-color: -bs-background-color;
     -fx-background-radius: 3 3 0 0;
     -fx-padding: 0.333333em 0.333333em 0.333333em 0.333333em;
 }
@@ -635,11 +586,11 @@
 }
 
 .jfx-text-field-top-label {
-    -fx-text-fill: -bs-color-gray-6;
+    -fx-text-fill: -bs-color-gray-dim;
 }
 
 .jfx-text-field:readonly, .hyperlink-with-icon {
-    -fx-background-color: -bs-background-gray;
+    -fx-background-color: -bs-color-gray-1;
     -fx-padding: 0.333333em 0.333333em 0.333333em 0.333333em;
 }
 
@@ -699,7 +650,7 @@
 .input-with-border {
     -fx-background-color: -bs-background-color;
     -fx-border-width: 1;
-    -fx-border-color: -bs-color-gray-2;
+    -fx-border-color: -bs-background-gray;
     -fx-border-radius: 3;
     -fx-pref-height: 43;
     -fx-pref-width: 310;
@@ -756,11 +707,12 @@
     -fx-pref-width: 15;
     -fx-pref-height: 15;
 }
-.jfx-badge .badge-pane .text {
-    -fx-fill: white;
+
+.jfx-badge.new .badge-pane {
+    -fx-pref-width: 30;
 }
 
-.jfx-badge .badge-pane {
+.jfx-badge .badge-pane .label {
     -fx-font-weight: bold;
     -fx-font-size: 0.692em;
     -fx-text-fill: -bs-background-color;
@@ -768,10 +720,6 @@
 
 .jfx-badge {
     -fx-padding: -3 0 0 0;
-}
-
-.jfx-badge.new .badge-pane {
-    -fx-pref-width: 30;
 }
 
 .jfx-toggle-button,
@@ -793,7 +741,6 @@
 
 .jfx-text-area:readonly {
     -fx-background-color: transparent;
-    -jfx-focus-color: transparent;
 }
 
 .jfx-text-area > .input-line {
@@ -877,12 +824,12 @@
 
 .scroll-bar:horizontal .thumb:hover,
 .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: -bs-color-gray-6;
+    -fx-background-color: -bs-color-gray-ccc;
 }
 
 .scroll-bar:horizontal .thumb:pressed,
 .scroll-bar:vertical .thumb:pressed {
-    -fx-background-color: -bs-color-gray-6;
+    -fx-background-color: -bs-color-gray-ccc;
 }
 
 .scroll-bar:vertical .increment-button,
@@ -903,7 +850,7 @@
 
 .scroll-bar:vertical:focused,
 .scroll-bar:horizontal:focused {
-    -fx-background-color: transparent, -bs-color-gray-6, -bs-color-gray-6;
+    -fx-background-color: transparent, -bs-color-darkest, -bs-color-gray-6;
 }
 
 /* Behavior */
@@ -953,8 +900,7 @@
 }
 
 #footer-pane-line {
-    -fx-border-color: -bs-footer-pane-line;
-    -fx-background-color: -bs-footer-pane-line;
+    -fx-background: -bs-footer-pane-line;
 }
 
 #headline-label {
@@ -1044,9 +990,6 @@
 .nav-balance-label {
     -fx-font-size: 0.769em;
     -fx-alignment: center-left;
-}
-
-.nav-balance-label, .nav-balance-label > .text {
     -fx-text-fill: -bs-rd-font-balance-label;
 }
 
@@ -1067,7 +1010,7 @@
 
 #label-url {
     -fx-cursor: hand;
-    -fx-text-fill: -bs-blue;
+    -fx-text-fill: -bs-color-blue-0;
     -fx-underline: true;
 }
 
@@ -1078,14 +1021,6 @@
     -fx-border-width: 1;
     -fx-padding: 0.166667em;
     /* 2px */
-}
-
-.separated-phase-bar-active {
-    -fx-text-fill: -fx-accent;
-}
-
-.separated-phase-bar-inactive {
-    -fx-text-fill: -bs-color-primary-dark;
 }
 
 /*******************************************************************************
@@ -1105,20 +1040,16 @@
     -fx-font-size: 0.85em;
 }
 
-.tooltip-hyperlink-icon {
-    -fx-text-fill: -bs-rd-font-lighter;
-}
-
 /* Same style like non editable textfield. But textfield spans a whole column in a grid, so we use generally
 textfield */
 #label-with-background {
-    -fx-background-color: -bs-color-gray-1;
+    -fx-background-color: -bs-color-gray-fafa;
     -fx-border-radius: 4;
     -fx-padding: 4 4 4 4;
 }
 
 #funds-confidence {
-    -fx-progress-color: -bs-color-gray-6;
+    -fx-progress-color: -bs-color-gray-dim;
     -fx-max-width: 20;
     -fx-max-height: 20;
 }
@@ -1185,14 +1116,6 @@ textfield */
     -fx-max-width: -fx-pref-width;
     -fx-min-height: -fx-pref-height;
     -fx-max-height: -fx-pref-height;
-}
-
-.jfx-tab-pane .tab-content-area {
-    -fx-background-color: -bs-tab-content-area;
-}
-
-.jfx-tab-pane .viewport {
-    -fx-background-color: -bs-viewport-background;
 }
 
 .jfx-tab-pane .headers-region .tab .tab-container .tab-close-button .jfx-rippler {
@@ -1268,7 +1191,6 @@ textfield */
 .scroll-pane {
     -fx-background-insets: 0;
     -fx-padding: 0;
-    -fx-background-color: -bs-scroll-pane-background;
 }
 
 .scroll-pane:focused {
@@ -1290,7 +1212,7 @@ textfield */
  *                                                                             *
  ******************************************************************************/
 .grid-pane {
-    -fx-background-color: -bs-background-gray;
+    -fx-background-color: -bs-content-background-gray;
     -fx-background-radius: 5;
     -fx-effect: null;
     -fx-effect: dropshadow(gaussian, -bs-color-gray-10, 10, 0, 0, 0);
@@ -1305,415 +1227,6 @@ textfield */
 
 #address-text-field:hover {
     -fx-text-fill: -bs-text-color;
-}
-
-/*
- * Copyright (c) 2008, 2013 Oracle and/or its affiliates.
- * All rights reserved. Use is subject to license terms.
- *
- * This file is available and licensed under the following license:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the distribution.
- *  - Neither the name of Oracle Corporation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-/* ====== CANDLE STICK CHART =========================================================== */
-.chart-horizontal-grid-lines, .chart-vertical-grid-lines {
-    -fx-stroke: -bs-color-gray-1;
-}
-
-.chart-horizontal-zero-line, .chart-vertical-zero-line {
-    -fx-stroke: -bs-color-gray-2;
-}
-
-.candlestick-tooltip-label {
-    -fx-font-size: 0.75em;
-    -fx-font-weight: bold;
-    -fx-text-fill: #666666;
-    -fx-padding: 2 5 2 0;
-}
-
-.candlestick-average-line {
-    -fx-stroke: -bs-candle-stick-average-line;
-    -fx-stroke-width: 1px;
-}
-
-.candlestick-line {
-    -stick-line-fill: -bs-sell;
-    -fx-stroke: -stick-line-fill;
-    -fx-stroke-width: 1px;
-}
-
-.candlestick-line.close-above-open {
-    -stick-line-fill: -bs-candle-stick-won;
-}
-
-.candlestick-line.open-above-close {
-    -stick-line-fill: -bs-candle-stick-loss;
-}
-
-.candlestick-bar {
-    -fx-padding: 5;
-    -demo-bar-fill: -bs-sell;
-    -fx-background-color: -demo-bar-fill;
-    -fx-background-insets: 0;
-}
-
-.candlestick-bar.close-above-open {
-    -demo-bar-fill: -bs-candle-stick-won;
-}
-
-.candlestick-bar.open-above-close {
-    -demo-bar-fill: -bs-candle-stick-loss;
-}
-
-.candlestick-bar.empty {
-    -demo-bar-fill: #cccccc;
-}
-
-.volume-bar {
-    -fx-padding: 5;
-    -fx-background-color: -bs-volume-transparent;
-    -fx-background-insets: 0;
-}
-
-.chart-alternative-row-fill {
-    -fx-fill: transparent;
-    -fx-stroke: transparent;
-    -fx-stroke-width: 0;
-}
-
-.chart-plot-background {
-    -fx-background-color: -bs-background-color;
-}
-
-/* splash screen */
-/*noinspection CssUnknownTarget*/
-#image-splash-logo {
-    -fx-image: url('/images/logo_splash.png?1565598211');
-}
-
-/* shared*/
-#image-info {
-    -fx-image: url('/images/info.png?1565598211');
-}
-
-#light_close {
-    -fx-image: url('/images/light_close.png?1565598211');
-}
-
-#image-alert-round {
-    -fx-image: url('/images/alert_round.png?1565598211');
-}
-
-#image-green_circle {
-    -fx-image: url('/images/green_circle.png?1565598211');
-}
-
-#image-blue_circle {
-    -fx-image: url('/images/blue_circle.png?1565598211');
-}
-
-#image-remove {
-    -fx-image: url('/images/remove.png?1565598211');
-}
-
-#image-buy-white {
-    -fx-image: url('/images/buy_white.png?1565598211');
-}
-
-#image-buy-green {
-    -fx-image: url('/images/buy_green.png?1565598211');
-}
-
-#image-sell-white {
-    -fx-image: url('/images/sell_white.png?1565598211');
-}
-
-#image-sell-red {
-    -fx-image: url('/images/sell_red.png?1565598211');
-}
-
-#image-expand {
-    -fx-image: url('/images/expand.png?1565598211');
-}
-
-#image-collapse {
-    -fx-image: url('/images/collapse.png?1565598211');
-}
-
-/* navigation buttons */
-#image-nav-market {
-    -fx-image: url('/images/nav/market.png');
-}
-
-#image-nav-market-active {
-    -fx-image: url('/images/nav/market_active.png');
-}
-
-#image-nav-buyoffer {
-    -fx-image: url('/images/nav/buyoffer.png');
-}
-
-#image-nav-buyoffer-active {
-    -fx-image: url('/images/nav/buyoffer_active.png');
-}
-
-#image-nav-selloffer {
-    -fx-image: url('/images/nav/selloffer.png');
-}
-
-#image-nav-selloffer-active {
-    -fx-image: url('/images/nav/selloffer_active.png');
-}
-
-#image-nav-portfolio {
-    -fx-image: url('/images/nav/portfolio.png');
-}
-
-#image-nav-portfolio-active {
-    -fx-image: url('/images/nav/portfolio_active.png');
-}
-
-#image-nav-funds {
-    -fx-image: url('/images/nav/funds.png');
-}
-
-#image-nav-funds-active {
-    -fx-image: url('/images/nav/funds_active.png');
-}
-
-#image-nav-disputes {
-    -fx-image: url('/images/nav/disputes.png');
-}
-
-#image-nav-disputes-active {
-    -fx-image: url('/images/nav/disputes_active.png');
-}
-
-#image-nav-settings {
-    -fx-image: url('/images/nav/settings.png');
-}
-
-#image-nav-settings-active {
-    -fx-image: url('/images/nav/settings_active.png');
-}
-
-#image-nav-account {
-    -fx-image: url('/images/nav/account.png');
-}
-
-#image-nav-account-active {
-    -fx-image: url('/images/nav/account_active.png');
-}
-
-#image-nav-dao {
-    -fx-image: url('/images/nav/dao.png');
-}
-
-#image-nav-dao-active {
-    -fx-image: url('/images/nav/dao_active.png');
-}
-
-/* account*/
-#image-tick {
-    -fx-image: url('/images/tick.png?1565598211');
-}
-
-#image-arrow-blue {
-    -fx-image: url('/images/arrow_blue.png?1565598211');
-}
-
-#image-arrow-grey {
-    -fx-image: url('/images/arrow_grey.png?1565598211');
-}
-
-/* connection state*/
-#image-connection-tor {
-    -fx-image: url('/images/connection/tor.png?1565598211');
-}
-
-#image-connection-direct {
-    -fx-image: url('/images/connection/direct.png?1565598211');
-}
-
-#image-connection-nat {
-    -fx-image: url('/images/connection/nat.png?1565598211');
-}
-
-#image-connection-relay {
-    -fx-image: url('/images/connection/relay.png?1565598211');
-}
-
-#image-connection-synced {
-    -fx-image: url('/images/connection/synced.png?1565598211');
-}
-
-/* software update*/
-#image-update-in-progress {
-    -fx-image: url('/images/update/update_in_progress.png?1565598211');
-}
-
-#image-update-up-to-date {
-    -fx-image: url('/images/update/update_up_to_date.png?1565598211');
-}
-
-#image-update-available {
-    -fx-image: url('/images/update/update_available.png?1565598211');
-}
-
-#image-update-failed {
-    -fx-image: url('/images/update/update_failed.png?1565598211');
-}
-
-/* offer state */
-#image-offer_state_unknown {
-    -fx-image: url('/images/offer/offer_state_unknown.png?1565598211');
-}
-
-#image-offer_state_available {
-    -fx-image: url('/images/offer/offer_state_available.png?1565598211');
-}
-
-#image-offer_state_not_available {
-    -fx-image: url('/images/offer/offer_state_not_available.png?1565598211');
-}
-
-#image-attachment {
-    -fx-image: url('/images/attachment.png?1565598211');
-}
-
-#bubble_arrow_grey_left {
-    -fx-image: url('/images/bubble_arrow_grey_left.png?1565598211');
-}
-
-#bubble_arrow_blue_left {
-    -fx-image: url('/images/bubble_arrow_blue_left.png?1565598211');
-}
-
-#bubble_arrow_grey_right {
-    -fx-image: url('/images/bubble_arrow_grey_right.png?1565598211');
-}
-
-#bubble_arrow_blue_right {
-    -fx-image: url('/images/bubble_arrow_blue_right.png?1565598211');
-}
-
-#link {
-    -fx-image: url('/images/link.png?1565598211');
-}
-
-#invert {
-    -fx-image: url('/images/invert.png?1565598211');
-}
-
-#avatar_1 {
-    -fx-image: url('/images/avatars/avatar_1.png?1565598211');
-}
-
-#avatar_2 {
-    -fx-image: url('/images/avatars/avatar_2.png?1565598211');
-}
-
-#avatar_3 {
-    -fx-image: url('/images/avatars/avatar_3.png?1565598211');
-}
-
-#avatar_4 {
-    -fx-image: url('/images/avatars/avatar_4.png?1565598211');
-}
-
-#avatar_5 {
-    -fx-image: url('/images/avatars/avatar_5.png?1565598211');
-}
-
-#avatar_6 {
-    -fx-image: url('/images/avatars/avatar_6.png?1565598211');
-}
-
-#avatar_7 {
-    -fx-image: url('/images/avatars/avatar_7.png?1565598211');
-}
-
-#avatar_8 {
-    -fx-image: url('/images/avatars/avatar_8.png?1565598211');
-}
-
-#avatar_9 {
-    -fx-image: url('/images/avatars/avatar_9.png?1565598211');
-}
-
-#avatar_10 {
-    -fx-image: url('/images/avatars/avatar_10.png?1565598211');
-}
-
-#avatar_11 {
-    -fx-image: url('/images/avatars/avatar_11.png?1565598211');
-}
-
-#avatar_12 {
-    -fx-image: url('/images/avatars/avatar_12.png?1565598211');
-}
-
-#avatar_13 {
-    -fx-image: url('/images/avatars/avatar_13.png?1565598211');
-}
-
-#avatar_14 {
-    -fx-image: url('/images/avatars/avatar_14.png?1565598211');
-}
-
-#avatar_15 {
-    -fx-image: url('/images/avatars/avatar_15.png?1565598211');
-}
-
-#poloniex {
-    -fx-image: url('/images/poloniex.png?1565598211');
-}
-
-#btcaverage {
-    -fx-image: url('/images/btcaverage.png?1565598211');
-}
-
-#accepted {
-    -fx-image: url('/images/accepted.png?1565598211');
-}
-
-#rejected {
-    -fx-image: url('/images/rejected.png?1565598211');
-}
-
-#dao-screenshot-governance {
-    -fx-image: url("dao-screenshot-governance.png");
-}
-
-#dao-screenshot-trading {
-    -fx-image: url("dao-screenshot-trading.png");
-}
-
-#dao-screenshot-cheaper-fees {
-    -fx-image: url("dao-screenshot-cheaper-fees.png");
 }
 
 /********************************************************************************************************************
@@ -2010,12 +1523,6 @@ textfield */
     -fx-background-color: derive(-bs-sell, -10%);
 }
 
-#sell-button-big.grey-style, #buy-button-big.grey-style,
-#sell-button.grey-style, #buy-button.grey-style {
-    -fx-background-color: -bs-color-gray-2;
-    -fx-text-fill: -bs-rd-font-dark-gray;
-}
-
 .action-button:disabled, #sell-button:disabled, #buy-button:disabled {
     -fx-background-color: -bs-color-gray-0;
     -fx-text-fill: -bs-rd-font-dark-gray;
@@ -2092,7 +1599,7 @@ textfield */
 
 #info-icon-label {
     -fx-font-size: 1.231em;
-    -fx-text-fill: -bs-color-gray-10;
+    -fx-text-fill: -bs-color-gray-13;
 }
 
 /* OfferPayload book */
@@ -2143,7 +1650,7 @@ textfield */
 }
 
 #payment-info {
-    -fx-background-color: -bs-color-gray-1;
+    -fx-background-color: -bs-content-background-gray;
 }
 
 .toggle-button-active {
@@ -2198,6 +1705,10 @@ textfield */
 }
 
 /* Offer */
+.percentage-label {
+    -fx-alignment: center;
+}
+
 .offer-separator {
     -fx-background: -bs-color-gray-6;
 }
@@ -2229,7 +1740,7 @@ textfield */
 
 /* Account settings */
 #account-settings-item-background-disabled {
-    -fx-body-color: linear-gradient(to bottom, -bs-color-gray-1, -bs-color-gray-1);
+    -fx-body-color: linear-gradient(to bottom, -bs-content-background-gray, -bs-color-gray-1);
     -fx-outer-border: linear-gradient(to bottom, -bs-background-gray, -bs-color-gray-3);
     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
@@ -2237,7 +1748,7 @@ textfield */
 }
 
 #account-settings-item-background-active {
-    -fx-body-color: linear-gradient(to bottom, -bs-color-gray-1, -bs-color-gray-1);
+    -fx-body-color: linear-gradient(to bottom, -bs-content-background-gray, -bs-color-gray-1);
     -fx-outer-border: linear-gradient(to bottom, -bs-background-gray, -bs-color-gray-3);
     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
@@ -2245,7 +1756,7 @@ textfield */
 }
 
 #account-settings-item-background-selected {
-    -fx-body-color: linear-gradient(to bottom, -bs-color-gray-0, -bs-color-gray-1);
+    -fx-body-color: linear-gradient(to bottom, -bs-color-gray-5, -bs-color-gray-1);
     -fx-outer-border: linear-gradient(to bottom, -bs-color-blue-1, -bs-color-blue-2);
     -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
@@ -2267,35 +1778,11 @@ textfield */
 }
 
 .trade-step-disabled-bg {
-    -fx-fill: -bs-color-gray-6;
+    -fx-fill: -bs-color-gray-ccc;
 }
 
 .trade-step-active-bg {
     -fx-fill: -bs-color-primary-dark;
-}
-
-.trade-msg-state-undefined {
-    -fx-text-fill: -bs-yellow;
-}
-
-.trade-msg-state-sent {
-    -fx-text-fill: -bs-yellow-light;
-}
-
-.trade-msg-state-arrived {
-    -fx-text-fill: -bs-turquoise;
-}
-
-.trade-msg-state-stored {
-    -fx-text-fill: -bs-color-blue-4;
-}
-
-.trade-msg-state-acknowledged {
-    -fx-text-fill: -bs-color-primary;
-}
-
-.trade-msg-state-failed {
-    -fx-text-fill: -bs-rd-error-red;
 }
 
 #open-support-button {
