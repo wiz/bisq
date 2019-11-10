@@ -19,12 +19,14 @@ package bisq.core.trade.protocol.tasks.mediation;
 
 import bisq.core.btc.model.AddressEntry;
 import bisq.core.btc.wallet.BtcWalletService;
+import bisq.core.btc.wallet.WalletService;
 import bisq.core.support.dispute.mediation.MediationResultState;
 import bisq.core.trade.Trade;
 import bisq.core.trade.messages.MediatedPayoutTxPublishedMessage;
 import bisq.core.trade.protocol.tasks.TradeTask;
 import bisq.core.util.Validator;
 
+import bisq.common.UserThread;
 import bisq.common.taskrunner.TaskRunner;
 
 import org.bitcoinj.core.Transaction;
@@ -54,14 +56,19 @@ public class ProcessMediatedPayoutTxPublishedMessage extends TradeTask {
             trade.setTradingPeerNodeAddress(processModel.getTempTradingPeerNodeAddress());
 
             if (trade.getPayoutTx() == null) {
-                Transaction walletTx = processModel.getTradeWalletService().addTxToWallet(message.getPayoutTx());
-                trade.setPayoutTx(walletTx);
-                BtcWalletService.printTx("payoutTx received from peer", walletTx);
+                Transaction committedMediatedPayoutTx = WalletService.maybeAddNetworkTxToWallet(message.getPayoutTx(), processModel.getBtcWalletService().getWallet());
+                trade.setPayoutTx(committedMediatedPayoutTx);
+                BtcWalletService.printTx("MediatedPayoutTx received from peer", committedMediatedPayoutTx);
 
                 trade.setMediationResultState(MediationResultState.RECEIVED_PAYOUT_TX_PUBLISHED_MSG);
 
                 if (trade.getPayoutTx() != null) {
-                    processModel.getTradeManager().closeDisputedTrade(trade.getId(), Trade.DisputeState.MEDIATION_CLOSED);
+                    // We need to delay that call as we might get executed at startup after mailbox messages are
+                    // applied where we iterate over out pending trades. The closeDisputedTrade method would remove
+                    // that trade from the list causing a ConcurrentModificationException.
+                    // To avoid that we delay for one render frame.
+                    UserThread.execute(() -> processModel.getTradeManager()
+                            .closeDisputedTrade(trade.getId(), Trade.DisputeState.MEDIATION_CLOSED));
                 }
 
                 processModel.getBtcWalletService().swapTradeEntryToAvailableEntry(trade.getId(), AddressEntry.Context.MULTI_SIG);

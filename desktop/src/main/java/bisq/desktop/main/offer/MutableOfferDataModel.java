@@ -21,7 +21,6 @@ import bisq.desktop.Navigation;
 import bisq.desktop.util.DisplayUtils;
 import bisq.desktop.util.GUIUtil;
 
-import bisq.core.account.witness.AccountAgeRestrictions;
 import bisq.core.account.witness.AccountAgeWitnessService;
 import bisq.core.btc.TxFeeEstimationService;
 import bisq.core.btc.listeners.BalanceListener;
@@ -56,6 +55,7 @@ import bisq.network.p2p.P2PService;
 
 import bisq.common.app.Version;
 import bisq.common.crypto.KeyRing;
+import bisq.common.util.MathUtils;
 import bisq.common.util.Tuple2;
 import bisq.common.util.Utilities;
 
@@ -357,7 +357,8 @@ public abstract class MutableOfferDataModel extends OfferDataModel implements Bs
         Map<String, String> extraDataMap = OfferUtil.getExtraDataMap(accountAgeWitnessService,
                 referralIdService,
                 paymentAccount,
-                currencyCode);
+                currencyCode,
+                preferences);
 
         OfferUtil.validateOfferData(filterManager,
                 p2PService,
@@ -580,15 +581,25 @@ public abstract class MutableOfferDataModel extends OfferDataModel implements Bs
     }
 
     long getMaxTradeLimit() {
-        if (paymentAccount != null)
-            return AccountAgeRestrictions.getMyTradeLimitAtCreateOffer(accountAgeWitnessService, paymentAccount, tradeCurrencyCode.get(), direction);
-        else
+        if (paymentAccount != null) {
+            return accountAgeWitnessService.getMyTradeLimit(paymentAccount, tradeCurrencyCode.get(), direction);
+        } else {
             return 0;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     // Utils
     ///////////////////////////////////////////////////////////////////////////////////////////
+
+    double calculateMarketPriceManual(double marketPrice, double volumeAsDouble, double amountAsDouble) {
+        double manualPriceAsDouble = volumeAsDouble / amountAsDouble;
+        double percentage = MathUtils.roundDouble(manualPriceAsDouble / marketPrice, 4);
+
+        setMarketPriceMargin(percentage);
+
+        return manualPriceAsDouble;
+    }
 
     void calculateVolume() {
         if (price.get() != null &&
