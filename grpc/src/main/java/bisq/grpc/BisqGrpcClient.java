@@ -22,11 +22,12 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
-
-
 import bisq.grpc.protobuf.GetBalanceRequest;
 import bisq.grpc.protobuf.GetVersionRequest;
 import bisq.grpc.protobuf.StopServerRequest;
+import bisq.grpc.protobuf.GetBalanceGrpc;
+import bisq.grpc.protobuf.GetVersionGrpc;
+import bisq.grpc.protobuf.StopServerGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
