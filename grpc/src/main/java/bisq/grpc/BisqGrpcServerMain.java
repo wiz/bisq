@@ -28,7 +28,7 @@ import bisq.common.setup.CommonSetup;
 /**
  * Main class to start gRPC server with a headless BisqGrpcApp instance.
  */
-public class BisqGrpcServerMain extends BisqHeadlessAppMain implements BisqSetup.BisqSetupCompleteListener {
+public class BisqGrpcServerMain extends BisqHeadlessAppMain implements BisqSetup.BisqSetupListener {
     private static BisqGrpcServer bisqGrpcServer;
 
     public static void main(String[] args) throws Exception {
@@ -52,7 +52,7 @@ public class BisqGrpcServerMain extends BisqHeadlessAppMain implements BisqSetup
     @Override
     protected void onApplicationStarted() {
         BisqSetup bisqSetup = injector.getInstance(BisqSetup.class);
-        bisqSetup.addBisqSetupCompleteListener(this);
+        bisqSetup.addBisqSetupListener(this);
         bisqSetup.start();
     }
 
