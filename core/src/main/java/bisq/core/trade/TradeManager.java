@@ -235,7 +235,7 @@ public class TradeManager implements PersistedDataHost {
         });
 
         jsonFileManager = new JsonFileManager(storageDir);
-
+        failedTradesManager.setUnfailTradeCallback(this::unfailTrade);
     }
 
     @Override
@@ -587,6 +587,13 @@ public class TradeManager implements PersistedDataHost {
         failedTradesManager.add(trade);
 
         cleanUpAddressEntries();
+    }
+
+    // If trade still has funds locked up it might come back from failed trades
+    private void unfailTrade(Trade trade) {
+        if (!tradableList.contains(trade)) {
+            tradableList.add(trade);
+        }
     }
 
     // If trade is in preparation (if taker role: before taker fee is paid; both roles: before deposit published)
