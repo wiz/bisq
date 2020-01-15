@@ -30,6 +30,9 @@ import org.bitcoinj.wallet.Wallet;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 
+import java.io.ByteArrayOutputStream;
+import java.lang.StringBuilder;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,6 +90,25 @@ public class TxBroadcaster {
     public static void broadcastTx(Wallet wallet, PeerGroup peerGroup, Transaction tx, Callback callback, int delayInSec) {
         Timer timeoutTimer;
         final String txId = tx.getHashAsString();
+        final StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+        try
+        {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            tx.bitcoinSerialize(os);
+            byte[] bytes = os.toByteArray();
+            for (byte b : bytes)
+                formatter.format("%02x", b);
+            log.warn("broadcastTx {}", sb.toString());
+        }
+        catch (Exception e)
+        {
+            log.warn("broadcastTx got exception while serializing TX as hex: {}", e.toString());
+        }
+        finally
+        {
+            formatter.close();
+        }
         if (!broadcastTimerMap.containsKey(txId)) {
             timeoutTimer = UserThread.runAfter(() -> {
                 log.warn("Broadcast of tx {} not completed after {} sec.", txId, delayInSec);
