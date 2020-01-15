@@ -54,10 +54,14 @@ import com.google.common.util.concurrent.Futures;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.util.Arrays;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import java.io.ByteArrayOutputStream;
+import java.lang.StringBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1010,6 +1014,27 @@ public class BtcWalletService extends WalletService {
         Futures.addCallback(sendResult.broadcastComplete, callback);
 
         printTx("sendFunds", sendResult.tx);
+
+        final StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+        try
+        {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            sendResult.tx.bitcoinSerialize(os);
+            byte[] bytes = os.toByteArray();
+            for (byte b : bytes)
+                formatter.format("%02x", b);
+            log.warn("broadcastTx {}", sb.toString());
+        }
+        catch (Exception e)
+        {
+            log.warn("broadcastTx got exception while serializing TX as hex: {}", e.toString());
+        }
+        finally
+        {
+            formatter.close();
+        }
+
         return sendResult.tx.getHashAsString();
     }
 
@@ -1027,6 +1052,27 @@ public class BtcWalletService extends WalletService {
         Futures.addCallback(sendResult.broadcastComplete, callback);
 
         printTx("sendFunds", sendResult.tx);
+
+        final StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+        try
+        {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            sendResult.tx.bitcoinSerialize(os);
+            byte[] bytes = os.toByteArray();
+            for (byte b : bytes)
+                formatter.format("%02x", b);
+            log.warn("broadcastTx {}", sb.toString());
+        }
+        catch (Exception e)
+        {
+            log.warn("broadcastTx got exception while serializing TX as hex: {}", e.toString());
+        }
+        finally
+        {
+            formatter.close();
+        }
+
         return sendResult.tx.getHashAsString();
     }
 
@@ -1038,6 +1084,27 @@ public class BtcWalletService extends WalletService {
                                        AddressEntry.Context context) throws AddressFormatException,
             AddressEntryException {
         Transaction tx = new Transaction(params);
+
+        final StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+        try
+        {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            tx.bitcoinSerialize(os);
+            byte[] bytes = os.toByteArray();
+            for (byte b : bytes)
+                formatter.format("%02x", b);
+            log.warn("broadcastTx {}", sb.toString());
+        }
+        catch (Exception e)
+        {
+            log.warn("broadcastTx got exception while serializing TX as hex: {}", e.toString());
+        }
+        finally
+        {
+            formatter.close();
+        }
+
         final Coin receiverAmount = amount.subtract(fee);
         Preconditions.checkArgument(Restrictions.isAboveDust(receiverAmount),
                 "The amount is too low (dust limit).");
@@ -1068,6 +1135,27 @@ public class BtcWalletService extends WalletService {
                                                            @Nullable KeyParameter aesKey) throws
             AddressFormatException, AddressEntryException, InsufficientMoneyException {
         Transaction tx = new Transaction(params);
+
+        final StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb);
+        try
+        {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            tx.bitcoinSerialize(os);
+            byte[] bytes = os.toByteArray();
+            for (byte b : bytes)
+                formatter.format("%02x", b);
+            log.warn("broadcastTx {}", sb.toString());
+        }
+        catch (Exception e)
+        {
+            log.warn("broadcastTx got exception while serializing TX as hex: {}", e.toString());
+        }
+        finally
+        {
+            formatter.close();
+        }
+
         final Coin netValue = amount.subtract(fee);
         checkArgument(Restrictions.isAboveDust(netValue),
                 "The amount is too low (dust limit).");
