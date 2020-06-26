@@ -393,7 +393,6 @@
 .jfx-toggle-button:selected,
 .jfx-toggle-button:focused:selected {
     -jfx-disable-visual-focus: true;
-    -fx-padding: 0 0 0 -3;
 }
 
 .jfx-text-area > .input-line {
