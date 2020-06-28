@@ -377,6 +377,10 @@
     -jfx-disable-animation: true;
 }
 
+.jfx-password-field {
+    -fx-background-color: derive(-bs-background-color, -15%);
+}
+
 .input-with-border {
     -fx-border-width: 0;
     -fx-border-color: -bs-background-color;
