@@ -487,3 +487,7 @@
 .titled-group-bg, .titled-group-bg-active {
     -fx-border-color: -bs-rd-separator-dark;
 }
+
+.action-button:disabled, #sell-button:disabled, #buy-button:disabled {
+    -fx-background-color: derive(-bs-color-gray-0, -20%);
+}
