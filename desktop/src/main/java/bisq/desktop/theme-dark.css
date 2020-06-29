@@ -386,10 +386,6 @@
     -fx-border-color: -bs-background-color;
 }
 
-.input-with-border-readonly > .input-label {
-    -fx-padding: 16;
-}
-
 .jfx-toggle-button,
 .jfx-toggle-button:armed,
 .jfx-toggle-button:hover,
