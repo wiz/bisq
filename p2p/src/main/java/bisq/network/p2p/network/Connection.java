@@ -235,7 +235,7 @@ public class Connection implements HasCapabilities, Runnable, MessageListener {
                     protobuf.NetworkEnvelope proto = networkEnvelope.toProtoNetworkEnvelope();
                     log.trace("Sending message: {}", Utilities.toTruncatedString(proto.toString(), 10000));
 
-                    if (networkEnvelope instanceof Ping | networkEnvelope instanceof RefreshOfferMessage) {
+                    if (networkEnvelope instanceof Ping || networkEnvelope instanceof RefreshOfferMessage) {
                         // pings and offer refresh msg we don't want to log in production
                         log.trace("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" +
                                         "Sending direct message to peer" +
@@ -284,7 +284,7 @@ public class Connection implements HasCapabilities, Runnable, MessageListener {
                                         if (!stopped) {
                                             synchronized (lock) {
                                                 BundleOfEnvelopes current = queueOfBundles.poll();
-                                                if (current != null) {
+                                                if (current != null && !stopped) {
                                                     if (current.getEnvelopes().size() == 1) {
                                                         protoOutputStream.writeEnvelope(current.getEnvelopes().get(0));
                                                     } else {
@@ -626,6 +626,10 @@ public class Connection implements HasCapabilities, Runnable, MessageListener {
 
     private void handleException(Throwable e) {
         CloseConnectionReason closeConnectionReason;
+
+        // silent fail if we are shutdown
+        if (stopped)
+            return;
 
         if (e instanceof SocketException) {
             if (socket.isClosed())

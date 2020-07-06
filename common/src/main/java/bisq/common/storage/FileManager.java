@@ -165,7 +165,9 @@ public class FileManager<T extends PersistableEnvelope> {
                 log.warn("make dir failed");
 
         File corruptedFile = new File(Paths.get(dbDir.getAbsolutePath(), backupFolderName, fileName).toString());
-        FileUtil.renameFile(storageFile, corruptedFile);
+        if (storageFile.exists()) {
+            FileUtil.renameFile(storageFile, corruptedFile);
+        }
     }
 
     synchronized void removeAndBackupFile(String fileName) throws IOException {
@@ -189,7 +191,7 @@ public class FileManager<T extends PersistableEnvelope> {
             log.debug("Write to disc: {}", storageFile.getName());
             protobuf.PersistableEnvelope protoPersistable;
             try {
-                protoPersistable = (protobuf.PersistableEnvelope) persistable.toProtoMessage();
+                protoPersistable = (protobuf.PersistableEnvelope) persistable.toPersistableMessage();
                 if (protoPersistable.toByteArray().length == 0)
                     log.error("protoPersistable is empty. persistable=" + persistable.getClass().getSimpleName());
             } catch (Throwable e) {

@@ -231,7 +231,7 @@ public abstract class MutableOfferViewModel<M extends MutableOfferDataModel> ext
         if (DevEnv.isDevMode()) {
             UserThread.runAfter(() -> {
                 amount.set("0.001");
-                price.set("75000"); // for CNY
+                price.set("0.0001"); // for BSQ
                 minAmount.set(amount.get());
                 onFocusOutPriceAsPercentageTextField(true, false);
                 applyMakerFee();
@@ -812,11 +812,14 @@ public abstract class MutableOfferViewModel<M extends MutableOfferDataModel> ext
             // We want to trigger a recalculation of the volume and minAmount
             UserThread.execute(() -> {
                 onFocusOutVolumeTextField(true, false);
-                // We also need to update minAmount
-                onFocusOutAmountTextField(true, false);
-                onFocusOutMinAmountTextField(true, false);
+                triggerFocusOutOnAmountFields();
             });
         }
+    }
+
+    public void triggerFocusOutOnAmountFields() {
+        onFocusOutAmountTextField(true, false);
+        onFocusOutMinAmountTextField(true, false);
     }
 
     public void onFocusOutPriceAsPercentageTextField(boolean oldValue, boolean newValue) {

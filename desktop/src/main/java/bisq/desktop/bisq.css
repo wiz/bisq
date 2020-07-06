@@ -237,6 +237,30 @@
     -fx-background-color: -fx-selection-bar;
 }
 
+
+/* list view */
+.list-view .list-cell {
+    -fx-background-color: -bs-background-color;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: derive(-bs-background-color, -5%);
+}
+.list-view .list-cell:even {
+    -fx-background-color: derive(-bs-background-color, 5%);
+}
+.list-view .list-cell:hover,
+.list-view .list-cell:selected,
+.table-view .table-cell:hover,
+.table-view .table-cell:selected {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-border-color: -fx-selection-bar;
+}
+
+.number-column.table-cell {
+    -fx-background-color: -bs-background-color;
+}
+
 .list-view:focused,
 .tree-view:focused,
 .table-view:focused,
@@ -701,11 +725,11 @@ tree-table-view:focused {
 }
 
 .text-field {
-    -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
+    -fx-prompt-text-fill: derive(-bs-prompt-text, -30%);
 }
 
 .text-area {
-    -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
+    -fx-prompt-text-fill: derive(-bs-prompt-text, -30%);
 }
 
 #label-url {
@@ -867,6 +891,32 @@ textfield */
  * Table                                                                       *
  *                                                                             *
  ******************************************************************************/
+.table-view .table-row-cell:even .table-cell {
+    -fx-background-color: derive(-bs-background-color, 5%);
+    -fx-border-color: derive(-bs-background-color,5%);
+}
+.table-view .table-row-cell:odd .table-cell {
+    -fx-background-color: derive(-bs-background-color,-5%);
+    -fx-border-color: derive(-bs-background-color,-5%);
+}
+.table-view .table-row-cell:hover .table-cell,
+.table-view .table-row-cell:selected .table-cell {
+    -fx-background: -fx-accent;
+    -fx-background-color: -fx-selection-bar;
+    -fx-border-color: -fx-selection-bar;
+}
+.table-row-cell {
+    -fx-border-color: -bs-background-color;
+}
+.table-row-cell:empty, .table-row-cell:empty:even, .table-row-cell:empty:odd {
+    -fx-background-color: -bs-background-color;
+    -fx-min-height: 36;
+}
+.offer-table .table-row-cell {
+    -fx-background: -fx-accent;
+    -fx-background-color: -bs-color-gray-6;
+}
+
 .table-view .table-cell {
     -fx-alignment: center-left;
     -fx-padding: 2 0 2 0;
@@ -1485,7 +1535,7 @@ textfield */
     -fx-text-fill: -fx-text-inner-color;
     -fx-highlight-fill: derive(-fx-control-inner-background, -20%);
     -fx-highlight-text-fill: -fx-text-inner-color;
-    -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
+    -fx-prompt-text-fill: derive(-bs-prompt-text, -30%);
     -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
     linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
     -fx-background-insets: 0, 1;
@@ -1497,7 +1547,7 @@ textfield */
     -fx-text-fill: -fx-text-inner-color;
     -fx-highlight-fill: derive(-fx-control-inner-background, -20%);
     -fx-highlight-text-fill: -fx-text-inner-color;
-    -fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);
+    -fx-prompt-text-fill: derive(-bs-prompt-text, -30%);
     -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
     linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -bs-color-gray-1);
     -fx-background-insets: 0, 1;

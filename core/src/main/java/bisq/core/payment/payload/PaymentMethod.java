@@ -302,13 +302,21 @@ public final class PaymentMethod implements PersistablePayload, Comparable<Payme
             riskFactor = 4;
         else if (maxTradeLimit == DEFAULT_TRADE_LIMIT_HIGH_RISK.value)
             riskFactor = 8;
-        else
-            throw new RuntimeException("maxTradeLimit is not matching one of our default values. maxTradeLimit=" + Coin.valueOf(maxTradeLimit).toFriendlyString());
+        else {
+            riskFactor = 8;
+            log.error("maxTradeLimit is not matching one of our default values. maxTradeLimit=" + Coin.valueOf(maxTradeLimit).toFriendlyString());
+        }
 
         TradeLimits tradeLimits = TradeLimits.getINSTANCE();
         checkNotNull(tradeLimits, "tradeLimits must not be null");
         long maxTradeLimit = tradeLimits.getMaxTradeLimit().value;
         return Coin.valueOf(tradeLimits.getRoundedRiskBasedTradeLimit(maxTradeLimit, riskFactor));
+    }
+
+    public String getShortName() {
+        // in cases where translation is not found, Res.get() simply returns the key string
+        // so no need for special error-handling code.
+        return Res.get(this.id + "_SHORT");
     }
 
     @Override

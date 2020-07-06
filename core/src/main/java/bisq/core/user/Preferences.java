@@ -80,8 +80,8 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
     private static final ArrayList<BlockChainExplorer> BTC_MAIN_NET_EXPLORERS = new ArrayList<>(Arrays.asList(
             new BlockChainExplorer("Blockstream.info", "https://blockstream.info/tx/", "https://blockstream.info/address/"),
             new BlockChainExplorer("Blockstream.info Tor V3", "http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/tx/", "http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/address/"),
-            new BlockChainExplorer("mempool.space", "https://mempool.space/tx/", "https://mempool.space/explorer/address/"),
-            new BlockChainExplorer("mempool.space Tor V2", "http://mempooltxrqf4re5.onion/tx/", "http://mempooltxrqf4re5.onion/explorer/address/"),
+            new BlockChainExplorer("mempool.ninja", "https://mempool.ninja/tx/", "https://mempool.ninja/address/"),
+            new BlockChainExplorer("mempool.ninja Tor V2", "http://mempooltxrqf4re5.onion/tx/", "http://mempooltxrqf4re5.onion/address/"),
             new BlockChainExplorer("OXT", "https://oxt.me/transaction/", "https://oxt.me/address/"),
             new BlockChainExplorer("Bitaps", "https://bitaps.com/", "https://bitaps.com/"),
             new BlockChainExplorer("Blockcypher", "https://live.blockcypher.com/btc/tx/", "https://live.blockcypher.com/btc/address/"),
@@ -92,7 +92,8 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
             new BlockChainExplorer("Smartbit", "https://www.smartbit.com.au/tx/", "https://www.smartbit.com.au/address/"),
             new BlockChainExplorer("SoChain. Wow.", "https://chain.so/tx/BTC/", "https://chain.so/address/BTC/"),
             new BlockChainExplorer("Blockchain.info", "https://blockchain.info/tx/", "https://blockchain.info/address/"),
-            new BlockChainExplorer("Insight", "https://insight.bitpay.com/tx/", "https://insight.bitpay.com/address/")
+            new BlockChainExplorer("Insight", "https://insight.bitpay.com/tx/", "https://insight.bitpay.com/address/"),
+            new BlockChainExplorer("Blockchair", "https://blockchair.com/bitcoin/transaction/", "https://blockchair.com/bitcoin/address/")
     ));
     private static final ArrayList<BlockChainExplorer> BTC_TEST_NET_EXPLORERS = new ArrayList<>(Arrays.asList(
             new BlockChainExplorer("Blockstream.info", "https://blockstream.info/testnet/tx/", "https://blockstream.info/testnet/address/"),
@@ -101,7 +102,8 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
             new BlockChainExplorer("Blocktrail", "https://www.blocktrail.com/tBTC/tx/", "https://www.blocktrail.com/tBTC/address/"),
             new BlockChainExplorer("Biteasy", "https://www.biteasy.com/testnet/transactions/", "https://www.biteasy.com/testnet/addresses/"),
             new BlockChainExplorer("Smartbit", "https://testnet.smartbit.com.au/tx/", "https://testnet.smartbit.com.au/address/"),
-            new BlockChainExplorer("SoChain. Wow.", "https://chain.so/tx/BTCTEST/", "https://chain.so/address/BTCTEST/")
+            new BlockChainExplorer("SoChain. Wow.", "https://chain.so/tx/BTCTEST/", "https://chain.so/address/BTCTEST/"),
+            new BlockChainExplorer("Blockchair", "https://blockchair.com/bitcoin/testnet/transaction/", "https://blockchair.com/bitcoin/testnet/address/")
     ));
     private static final ArrayList<BlockChainExplorer> BTC_DAO_TEST_NET_EXPLORERS = new ArrayList<>(Collections.singletonList(
             new BlockChainExplorer("BTC DAO-testnet explorer", "https://bisq.network/explorer/btc/dao_testnet/tx/", "https://bisq.network/explorer/btc/dao_testnet/address/")
@@ -736,11 +738,13 @@ public final class Preferences implements PersistedDataHost, BridgeAddressProvid
     }
 
     public boolean getUseTorForBitcoinJ() {
-        // We override the useTorForBitcoinJ and set it to false if we detected a localhost node or if we are not on mainnet,
-        // unless the useTorForBtc parameter is explicitly provided.
-        // On testnet there are very few Bitcoin tor nodes and we don't provide tor nodes.
+        // We override the useTorForBitcoinJ and set it to false if we will use a
+        // localhost Bitcoin node or if we are not on mainnet, unless the useTorForBtc
+        // parameter is explicitly provided. On testnet there are very few Bitcoin tor
+        // nodes and we don't provide tor nodes.
+
         if ((!Config.baseCurrencyNetwork().isMainnet()
-                || localBitcoinNode.isDetected())
+                || localBitcoinNode.shouldBeUsed())
                 && !config.useTorForBtcOptionSetExplicitly)
             return false;
         else

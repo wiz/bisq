@@ -19,6 +19,7 @@ package bisq.network.p2p.network;
 
 import bisq.network.p2p.NodeAddress;
 
+import bisq.common.Timer;
 import bisq.common.UserThread;
 import bisq.common.proto.network.NetworkEnvelope;
 import bisq.common.proto.network.NetworkProtoResolver;
@@ -48,6 +49,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -222,7 +224,7 @@ public abstract class NetworkNode implements MessageListener {
                 }
 
                 public void onFailure(@NotNull Throwable throwable) {
-                    log.info("onFailure at sendMessage: peersNodeAddress={}\n\tmessage={}\n\tthrowable={}", peersNodeAddress, networkEnvelope.getClass().getSimpleName(), throwable.toString());
+                    log.debug("onFailure at sendMessage: peersNodeAddress={}\n\tmessage={}\n\tthrowable={}", peersNodeAddress, networkEnvelope.getClass().getSimpleName(), throwable.toString());
                     UserThread.execute(() -> resultFuture.setException(throwable));
                 }
             });
@@ -330,10 +332,29 @@ public abstract class NetworkNode implements MessageListener {
                 server = null;
             }
 
-            getAllConnections().stream().forEach(c -> c.shutDown(CloseConnectionReason.APP_SHUT_DOWN));
-            log.debug("NetworkNode shutdown complete");
+            Set<Connection> allConnections = getAllConnections();
+            int numConnections = allConnections.size();
+            log.info("Shutdown {} connections", numConnections);
+            AtomicInteger shutdownCompleted = new AtomicInteger();
+            Timer timeoutHandler = UserThread.runAfter(() -> {
+                if (shutDownCompleteHandler != null) {
+                    log.info("Shutdown completed due timeout");
+                    shutDownCompleteHandler.run();
+                }
+            }, 3);
+            allConnections.forEach(c -> c.shutDown(CloseConnectionReason.APP_SHUT_DOWN,
+                    () -> {
+                        shutdownCompleted.getAndIncrement();
+                        log.info("Shutdown o fnode {} completed", c.getPeersNodeAddressOptional());
+                        if (shutdownCompleted.get() == numConnections) {
+                            log.info("Shutdown completed with all connections closed");
+                            timeoutHandler.stop();
+                            if (shutDownCompleteHandler != null) {
+                                shutDownCompleteHandler.run();
+                            }
+                        }
+                    }));
         }
-        if (shutDownCompleteHandler != null) shutDownCompleteHandler.run();
     }
 
 

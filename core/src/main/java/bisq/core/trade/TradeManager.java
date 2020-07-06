@@ -64,8 +64,8 @@ import bisq.common.handlers.FaultHandler;
 import bisq.common.handlers.ResultHandler;
 import bisq.common.proto.network.NetworkEnvelope;
 import bisq.common.proto.persistable.PersistedDataHost;
-import bisq.common.storage.JsonFileManager;
 import bisq.common.storage.Storage;
+import bisq.common.util.Tuple2;
 import bisq.common.util.Utilities;
 
 import org.bitcoinj.core.AddressFormatException;
@@ -90,11 +90,10 @@ import javafx.collections.ObservableList;
 
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.File;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -147,8 +146,9 @@ public class TradeManager implements PersistedDataHost {
     private final LongProperty numPendingTrades = new SimpleLongProperty();
     @Getter
     private final ObservableList<Trade> tradesWithoutDepositTx = FXCollections.observableArrayList();
-    private final boolean dumpDelayedPayoutTxs;
-    private final JsonFileManager jsonFileManager;
+    private final DumpDelayedPayoutTx dumpDelayedPayoutTx;
+    @Getter
+    private final boolean allowFaultyDelayedTxs;
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -176,8 +176,8 @@ public class TradeManager implements PersistedDataHost {
                         DaoFacade daoFacade,
                         ClockWatcher clockWatcher,
                         Storage<TradableList<Trade>> storage,
-                        @Named(Config.STORAGE_DIR) File storageDir,
-                        @Named(Config.DUMP_DELAYED_PAYOUT_TXS) boolean dumpDelayedPayoutTxs) {
+                        DumpDelayedPayoutTx dumpDelayedPayoutTx,
+                        @Named(Config.ALLOW_FAULTY_DELAYED_TXS) boolean allowFaultyDelayedTxs) {
         this.user = user;
         this.keyRing = keyRing;
         this.btcWalletService = btcWalletService;
@@ -197,7 +197,8 @@ public class TradeManager implements PersistedDataHost {
         this.refundAgentManager = refundAgentManager;
         this.daoFacade = daoFacade;
         this.clockWatcher = clockWatcher;
-        this.dumpDelayedPayoutTxs = dumpDelayedPayoutTxs;
+        this.dumpDelayedPayoutTx = dumpDelayedPayoutTx;
+        this.allowFaultyDelayedTxs = allowFaultyDelayedTxs;
 
         tradableListStorage = storage;
 
@@ -233,9 +234,7 @@ public class TradeManager implements PersistedDataHost {
                 }
             }
         });
-
-        jsonFileManager = new JsonFileManager(storageDir);
-
+        failedTradesManager.setUnfailTradeCallback(this::unfailTrade);
     }
 
     @Override
@@ -247,7 +246,8 @@ public class TradeManager implements PersistedDataHost {
             if (offer != null)
                 offer.setPriceFeedService(priceFeedService);
         });
-        maybeDumpDelayedPayoutTxs();
+
+        dumpDelayedPayoutTx.maybeDumpDelayedPayoutTxs(tradableList, "delayed_payout_txs_pending");
     }
 
 
@@ -289,10 +289,7 @@ public class TradeManager implements PersistedDataHost {
         tradableList.forEach(trade -> {
                     if (trade.isDepositPublished() ||
                             (trade.isTakerFeePublished() && !trade.hasFailed())) {
-                        initTrade(trade, trade.getProcessModel().isUseSavingsWallet(),
-                                trade.getProcessModel().getFundsNeededForTradeAsLong());
-                        trade.updateDepositTxFromWallet();
-                        tradesForStatistics.add(trade);
+                        initPendingTrade(trade);
                     } else if (trade.isTakerFeePublished() && !trade.isFundsLockedIn()) {
                         addTradeToFailedTradesList.add(trade);
                         trade.appendErrorMessage("Invalid state: trade.isTakerFeePublished() && !trade.isFundsLockedIn()");
@@ -306,6 +303,24 @@ public class TradeManager implements PersistedDataHost {
                                         "We leave it to the user to move the trade to failed trades if the problem persists.",
                                 trade.getId());
                         tradesWithoutDepositTx.add(trade);
+                    }
+
+                    try {
+                        DelayedPayoutTxValidation.validatePayoutTx(trade,
+                                trade.getDelayedPayoutTx(),
+                                daoFacade,
+                                btcWalletService);
+                    } catch (DelayedPayoutTxValidation.DonationAddressException |
+                            DelayedPayoutTxValidation.InvalidTxException |
+                            DelayedPayoutTxValidation.InvalidLockTimeException |
+                            DelayedPayoutTxValidation.MissingDelayedPayoutTxException |
+                            DelayedPayoutTxValidation.AmountMismatchException e) {
+                        log.warn("Delayed payout tx exception, trade {}, exception {}", trade.getId(), e.getMessage());
+                        if (!allowFaultyDelayedTxs) {
+                            // We move it to failed trades so it cannot be continued.
+                            log.warn("We move the trade with ID '{}' to failed trades", trade.getId());
+                            addTradeToFailedTradesList.add(trade);
+                        }
                     }
                 }
         );
@@ -331,6 +346,13 @@ public class TradeManager implements PersistedDataHost {
         pendingTradesInitialized.set(true);
     }
 
+    private void initPendingTrade(Trade trade) {
+        initTrade(trade, trade.getProcessModel().isUseSavingsWallet(),
+                trade.getProcessModel().getFundsNeededForTradeAsLong());
+        trade.updateDepositTxFromWallet();
+        tradesForStatistics.add(trade);
+    }
+
     private void onTradesChanged() {
         this.numPendingTrades.set(tradableList.getList().size());
     }
@@ -338,12 +360,12 @@ public class TradeManager implements PersistedDataHost {
     private void cleanUpAddressEntries() {
         // We check if we have address entries which are not in our pending trades and clean up those entries.
         // They might be either from closed or failed trades or from trades we do not have at all in our data base files.
-        Set<String> tradesIdSet = getTradesStreamWithFundsLockedIn()
+        Set<String> activeTrades = getTradableList().stream()
                 .map(Tradable::getId)
                 .collect(Collectors.toSet());
 
         btcWalletService.getAddressEntriesForTrade().stream()
-                .filter(e -> !tradesIdSet.contains(e.getOfferId()))
+                .filter(e -> !activeTrades.contains(e.getOfferId()))
                 .forEach(e -> {
                     log.warn("We found an outdated addressEntry for trade {}: entry={}", e.getOfferId(), e);
                     btcWalletService.resetAddressEntriesForPendingTrade(e.getOfferId());
@@ -439,6 +461,14 @@ public class TradeManager implements PersistedDataHost {
     public void checkOfferAvailability(Offer offer,
                                        ResultHandler resultHandler,
                                        ErrorMessageHandler errorMessageHandler) {
+
+        if (btcWalletService.isUnconfirmedTransactionsLimitHit() || bsqWalletService.isUnconfirmedTransactionsLimitHit()) {
+            String errorMessage = Res.get("shared.unconfirmedTransactionsLimitReached");
+            errorMessageHandler.handleErrorMessage(errorMessage);
+            log.warn(errorMessage);
+            return;
+        }
+
         offer.checkOfferAvailability(getOfferAvailabilityModel(offer), resultHandler, errorMessageHandler);
     }
 
@@ -588,6 +618,38 @@ public class TradeManager implements PersistedDataHost {
 
         cleanUpAddressEntries();
     }
+
+    // If trade still has funds locked up it might come back from failed trades
+    // Aborts unfailing if the address entries needed are not available
+    private boolean unfailTrade(Trade trade) {
+        if (!recoverAddresses(trade)) {
+            log.warn("Failed to recover address during unfail trade");
+            return false;
+        }
+
+        initPendingTrade(trade);
+
+        if (!tradableList.contains(trade)) {
+            tradableList.add(trade);
+        }
+        return true;
+    }
+
+    // The trade is added to pending trades if the associated address entries are AVAILABLE and
+    // the relevant entries are changed, otherwise it's not added and no address entries are changed
+    private boolean recoverAddresses(Trade trade) {
+        // Find addresses associated with this trade.
+        var entries = TradeUtils.getAvailableAddresses(trade, btcWalletService, keyRing);
+        if (entries == null)
+            return false;
+
+        btcWalletService.recoverAddressEntry(trade.getId(), entries.first,
+                AddressEntry.Context.MULTI_SIG);
+        btcWalletService.recoverAddressEntry(trade.getId(), entries.second,
+                AddressEntry.Context.TRADE_PAYOUT);
+        return true;
+    }
+
 
     // If trade is in preparation (if taker role: before taker fee is paid; both roles: before deposit published)
     // we just remove the trade from our list. We don't store those trades.
@@ -792,26 +854,5 @@ public class TradeManager implements PersistedDataHost {
 
     public void persistTrades() {
         tradableList.persist();
-    }
-
-    @SuppressWarnings("InnerClassMayBeStatic")
-    class DelayedPayoutHash {
-        String tradeId;
-        String delayedPayoutTx;
-        DelayedPayoutHash(String tradeId, String delayedPayoutTx) {
-            this.tradeId = tradeId;
-            this.delayedPayoutTx = delayedPayoutTx;
-        }
-    }
-
-    private void maybeDumpDelayedPayoutTxs() {
-        if (!dumpDelayedPayoutTxs)
-            return;
-
-        var delayedPayoutHashes = tradableList.stream()
-                .map(trade -> new DelayedPayoutHash(trade.getId(),
-                        Utilities.bytesAsHexString(trade.getDelayedPayoutTxBytes())))
-                .collect(Collectors.toList());
-        jsonFileManager.writeToDisc(Utilities.objectToJson(delayedPayoutHashes), "delayed_payout_txs");
     }
 }

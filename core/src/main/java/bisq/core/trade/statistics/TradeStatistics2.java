@@ -32,7 +32,6 @@ import bisq.common.app.Capabilities;
 import bisq.common.app.Capability;
 import bisq.common.crypto.Hash;
 import bisq.common.proto.ProtoUtil;
-import bisq.common.proto.persistable.PersistableEnvelope;
 import bisq.common.util.CollectionUtils;
 import bisq.common.util.ExtraDataMapValidator;
 import bisq.common.util.JsonExclude;
@@ -47,7 +46,6 @@ import org.bitcoinj.utils.Fiat;
 import com.google.common.base.Charsets;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,12 +64,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Slf4j
 @Value
-public final class TradeStatistics2 implements ProcessOncePersistableNetworkPayload, PersistableNetworkPayload, PersistableEnvelope, CapabilityRequiringPayload, Comparable<TradeStatistics2> {
+public final class TradeStatistics2 implements ProcessOncePersistableNetworkPayload, PersistableNetworkPayload,
+        CapabilityRequiringPayload, Comparable<TradeStatistics2> {
 
     public static final String MEDIATOR_ADDRESS = "medAddr";
     public static final String REFUND_AGENT_ADDRESS = "refAddr";
-
-    public static final Date CUT_OFF_DATE_FOR_DEPOSIT_TX_ID = Utilities.getUTCDate(2019, GregorianCalendar.FEBRUARY, 13);
 
     private final OfferPayload.Direction direction;
     private final String baseCurrency;

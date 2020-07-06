@@ -76,7 +76,6 @@ import bisq.common.Timer;
 import bisq.common.UserThread;
 import bisq.common.app.DevEnv;
 import bisq.common.app.Log;
-import bisq.common.config.BaseCurrencyNetwork;
 import bisq.common.config.Config;
 import bisq.common.crypto.CryptoException;
 import bisq.common.crypto.KeyRing;
@@ -344,25 +343,21 @@ public class BisqSetup {
         UserThread.runPeriodically(() -> {
         }, 1);
         maybeReSyncSPVChain();
-        maybeShowTac();
+        maybeShowTac(this::step2);
     }
 
     private void step2() {
-        detectLocalBitcoinNode(this::step3);
-    }
-
-    private void step3() {
         torSetup.cleanupTorFiles();
-        readMapsFromResources(this::step4);
+        readMapsFromResources(this::step3);
         checkCryptoSetup();
         checkForCorrectOSArchitecture();
     }
 
-    private void step4() {
-        startP2pNetworkAndWallet(this::step5);
+    private void step3() {
+        startP2pNetworkAndWallet(this::step4);
     }
 
-    private void step5() {
+    private void step4() {
         initDomainServices();
 
         bisqSetupListeners.forEach(BisqSetupListener::onSetupComplete);
@@ -470,26 +465,16 @@ public class BisqSetup {
         }
     }
 
-    private void maybeShowTac() {
+    private void maybeShowTac(Runnable nextStep) {
         if (!preferences.isTacAcceptedV120() && !DevEnv.isDevMode()) {
             if (displayTacHandler != null)
                 displayTacHandler.accept(() -> {
                     preferences.setTacAcceptedV120(true);
-                    step2();
+                    nextStep.run();
                 });
         } else {
-            step2();
-        }
-    }
-
-    private void detectLocalBitcoinNode(Runnable nextStep) {
-        BaseCurrencyNetwork baseCurrencyNetwork = config.baseCurrencyNetwork;
-        if (config.ignoreLocalBtcNode || baseCurrencyNetwork.isDaoRegTest() || baseCurrencyNetwork.isDaoTestNet()) {
             nextStep.run();
-            return;
         }
-
-        localBitcoinNode.detectAndRun(nextStep);
     }
 
     private void readMapsFromResources(Runnable nextStep) {
@@ -559,7 +544,8 @@ public class BisqSetup {
 
         // We only init wallet service here if not using Tor for bitcoinj.
         // When using Tor, wallet init must be deferred until Tor is ready.
-        if (!preferences.getUseTorForBitcoinJ() || localBitcoinNode.isDetected()) {
+        // TODO encapsulate below conditional inside getUseTorForBitcoinJ
+        if (!preferences.getUseTorForBitcoinJ() || localBitcoinNode.shouldBeUsed()) {
             initWallet();
         }
 
@@ -862,7 +848,7 @@ public class BisqSetup {
     }
 
     private void maybeShowLocalhostRunningInfo() {
-        maybeTriggerDisplayHandler("bitcoinLocalhostNode", displayLocalhostHandler, localBitcoinNode.isDetected());
+        maybeTriggerDisplayHandler("bitcoinLocalhostNode", displayLocalhostHandler, localBitcoinNode.shouldBeUsed());
     }
 
     private void maybeShowAccountSigningStateInfo() {

@@ -26,12 +26,14 @@ import bisq.network.p2p.storage.persistence.StoreService;
 
 import bisq.common.UserThread;
 import bisq.common.config.Config;
+import bisq.common.storage.FileManager;
 import bisq.common.storage.Storage;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -86,8 +88,10 @@ public class DaoStateStorageService extends StoreService<DaoStateStore> {
     }
 
     private void persist(DaoState daoState, LinkedList<DaoStateHash> daoStateHashChain, long delayInMilli) {
-        store.setDaoState(daoState);
-        store.setDaoStateHashChain(daoStateHashChain);
+        store.modifySynchronized(() -> {
+            store.setDaoState(daoState);
+            store.setDaoStateHashChain(daoStateHashChain);
+        });
         storage.queueUpForSave(store, delayInMilli);
     }
 
@@ -99,9 +103,31 @@ public class DaoStateStorageService extends StoreService<DaoStateStore> {
         return store.getDaoStateHashChain();
     }
 
-    public void resetDaoState(Runnable resultHandler) {
+    public void resyncDaoStateFromGenesis(Runnable resultHandler) {
         persist(new DaoState(), new LinkedList<>(), 1);
         UserThread.runAfter(resultHandler, 300, TimeUnit.MILLISECONDS);
+    }
+
+    public void resyncDaoStateFromResources(File storageDir) throws IOException {
+        // We delete all DAO consensus payload data and remove the daoState so it will rebuild from latest
+        // resource files.
+        long currentTime = System.currentTimeMillis();
+        String backupDirName = "out_of_sync_dao_data";
+        String newFileName = "BlindVoteStore_" + currentTime;
+        FileManager.removeAndBackupFile(storageDir, new File(storageDir, "BlindVoteStore"), newFileName, backupDirName);
+
+        newFileName = "ProposalStore_" + currentTime;
+        FileManager.removeAndBackupFile(storageDir, new File(storageDir, "ProposalStore"), newFileName, backupDirName);
+
+        // We also need to remove ballot list as it contains the proposals as well. It will be recreated at resync
+        newFileName = "BallotList_" + currentTime;
+        FileManager.removeAndBackupFile(storageDir, new File(storageDir, "BallotList"), newFileName, backupDirName);
+
+        newFileName = "UnconfirmedBsqChangeOutputList_" + currentTime;
+        FileManager.removeAndBackupFile(storageDir, new File(storageDir, "UnconfirmedBsqChangeOutputList"), newFileName, backupDirName);
+
+        newFileName = "DaoStateStore_" + currentTime;
+        FileManager.removeAndBackupFile(storageDir, new File(storageDir, "DaoStateStore"), newFileName, backupDirName);
     }
 
 

@@ -54,9 +54,10 @@ import bisq.core.dao.state.model.governance.Vote;
 import bisq.core.locale.Res;
 import bisq.core.user.Preferences;
 import bisq.core.util.FormattingUtils;
-import bisq.core.util.coin.BsqFormatter;
 import bisq.core.util.ParsingUtils;
+import bisq.core.util.coin.BsqFormatter;
 import bisq.core.util.coin.CoinFormatter;
+import bisq.core.util.validation.InputValidator;
 
 import bisq.common.UserThread;
 import bisq.common.app.DevEnv;
@@ -285,6 +286,11 @@ public class ProposalsView extends ActivatableView<GridPane, Void> implements Bs
                 availableForVoting = Coin.valueOf(0);
             stakeInputTextField.setPromptText(Res.get("dao.proposal.myVote.stake.prompt",
                     bsqFormatter.formatCoinWithCode(availableForVoting)));
+
+            BsqValidator stakeInputTextFieldValidator = new BsqValidator(bsqFormatter);
+            stakeInputTextFieldValidator.setMaxValue(availableForVoting);
+
+            stakeInputTextField.setValidator(stakeInputTextFieldValidator);
         } else
             stakeInputTextField.setPromptText("");
     }
@@ -554,6 +560,7 @@ public class ProposalsView extends ActivatableView<GridPane, Void> implements Bs
                 if (optionalMyVote.isPresent()) {
                     MyVote myVote = optionalMyVote.get();
                     Coin stake = Coin.valueOf(myVote.getBlindVote().getStake());
+                    stakeInputTextField.setValidator(new InputValidator());
                     stakeInputTextField.setText(bsqFormatter.formatCoinWithCode(stake));
 
                     if (myVote.getBlindVoteTxId() != null) {

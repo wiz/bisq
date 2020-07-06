@@ -1,12 +1,14 @@
 package bisq.common.config;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.UncheckedIOException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,17 +116,36 @@ public class ConfigTests {
     }
 
     @Test
+    public void whenUnrecognizedOptionIsSetInConfigFile_thenNoExceptionIsThrown() throws IOException {
+        File configFile = File.createTempFile("bisq", "properties");
+        try (PrintWriter writer = new PrintWriter(configFile)) {
+            writer.println(new ConfigFileOption("bogusOption", "bogusValue"));
+            writer.println(new ConfigFileOption(APP_NAME, "BisqTest"));
+        }
+        Config config = configWithOpts(opt(CONFIG_FILE, configFile.getAbsolutePath()));
+        assertThat(config.appName, equalTo("BisqTest"));
+    }
+
+    @Test
     public void whenOptionFileArgumentDoesNotExist_thenConfigExceptionIsThrown() {
+        String filepath = "/does/not/exist";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            filepath = "C:\\does\\not\\exist";
+        }
         exceptionRule.expect(ConfigException.class);
-        exceptionRule.expectMessage("problem parsing option 'torrcFile': File [/does/not/exist] does not exist");
-        configWithOpts(opt(TORRC_FILE, "/does/not/exist"));
+        exceptionRule.expectMessage(format("problem parsing option 'torrcFile': File [%s] does not exist", filepath));
+        configWithOpts(opt(TORRC_FILE, filepath));
     }
 
     @Test
     public void whenConfigFileOptionIsSetToNonExistentFile_thenConfigExceptionIsThrown() {
+        String filepath = "/no/such/bisq.properties";
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            filepath = "C:\\no\\such\\bisq.properties";
+        }
         exceptionRule.expect(ConfigException.class);
-        exceptionRule.expectMessage("The specified config file '/no/such/bisq.properties' does not exist");
-        configWithOpts(opt(CONFIG_FILE, "/no/such/bisq.properties"));
+        exceptionRule.expectMessage(format("The specified config file '%s' does not exist", filepath));
+        configWithOpts(opt(CONFIG_FILE, filepath));
     }
 
     @Test
@@ -209,13 +230,29 @@ public class ConfigTests {
     }
 
     @Test
-    public void whenAppDataDirCannotBeCreated_thenConfigExceptionIsThrown() throws IOException {
+    public void whenAppDataDirCannotBeCreated_thenUncheckedIoExceptionIsThrown() throws IOException {
         // set a userDataDir that is actually a file so appDataDir cannot be created
         File aFile = Files.createTempFile("A", "File").toFile();
-        exceptionRule.expect(ConfigException.class);
+        exceptionRule.expect(UncheckedIOException.class);
         exceptionRule.expectMessage(containsString("Application data directory"));
         exceptionRule.expectMessage(containsString("could not be created"));
         configWithOpts(opt(USER_DATA_DIR, aFile));
+    }
+
+    @Test
+    public void whenAppDataDirIsSymbolicLink_thenAppDataDirCreationIsNoOp() throws IOException {
+        Path parentDir = Files.createTempDirectory("parent");
+        Path targetDir = parentDir.resolve("target");
+        Path symlink = parentDir.resolve("symlink");
+        Files.createDirectory(targetDir);
+        try {
+            Files.createSymbolicLink(symlink, targetDir);
+        } catch (Throwable ex) {
+            // An error occurred trying to create a symbolic link, likely because the
+            // operating system (e.g. Windows) does not support it, so we abort the test.
+            return;
+        }
+        configWithOpts(opt(APP_DATA_DIR, symlink));
     }
 
 

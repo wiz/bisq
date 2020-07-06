@@ -115,6 +115,9 @@ public class Config {
     public static final String GENESIS_TOTAL_SUPPLY = "genesisTotalSupply";
     public static final String DAO_ACTIVATED = "daoActivated";
     public static final String DUMP_DELAYED_PAYOUT_TXS = "dumpDelayedPayoutTxs";
+    public static final String ALLOW_FAULTY_DELAYED_TXS = "allowFaultyDelayedTxs";
+    public static final String API_PASSWORD = "apiPassword";
+    public static final String API_PORT = "apiPort";
 
     // Default values for certain options
     public static final int UNSPECIFIED_PORT = -1;
@@ -139,7 +142,7 @@ public class Config {
     public final boolean helpRequested;
     public final File configFile;
 
-    // Options supported both at the cli and in the config file
+    // Options supported on cmd line and in the config file
     public final String appName;
     public final File userDataDir;
     public final File appDataDir;
@@ -197,6 +200,9 @@ public class Config {
     public final int genesisBlockHeight;
     public final long genesisTotalSupply;
     public final boolean dumpDelayedPayoutTxs;
+    public final boolean allowFaultyDelayedTxs;
+    public final String apiPassword;
+    public final int apiPort;
 
     // Properties derived from options but not exposed as options themselves
     public final File torDir;
@@ -204,7 +210,7 @@ public class Config {
     public final File storageDir;
     public final File keyStorageDir;
 
-    // The parser that will be used to parse both cli and config file options
+    // The parser that will be used to parse both cmd line and config file options
     private final OptionParser parser = new OptionParser();
 
     /**
@@ -373,7 +379,7 @@ public class Config {
                         .defaultsTo(false);
 
         ArgumentAcceptingOptionSpec<String> providersOpt =
-                parser.accepts(PROVIDERS, "List custom providers")
+                parser.accepts(PROVIDERS, "List custom pricenodes")
                         .withRequiredArg()
                         .withValuesSeparatedBy(',')
                         .describedAs("host:port[,...]");
@@ -392,7 +398,8 @@ public class Config {
                         .describedAs("host:port[,...]");
 
         ArgumentAcceptingOptionSpec<Boolean> useLocalhostForP2POpt =
-                parser.accepts(USE_LOCALHOST_FOR_P2P, "Use localhost P2P network for development")
+                parser.accepts(USE_LOCALHOST_FOR_P2P, "Use localhost P2P network for development. Only available for non-BTC_MAINNET configuration.")
+                        .availableIf(BASE_CURRENCY_NETWORK)
                         .withRequiredArg()
                         .ofType(boolean.class)
                         .defaultsTo(false);
@@ -605,12 +612,36 @@ public class Config {
                         .ofType(boolean.class)
                         .defaultsTo(false);
 
+        ArgumentAcceptingOptionSpec<Boolean> allowFaultyDelayedTxsOpt =
+                parser.accepts(ALLOW_FAULTY_DELAYED_TXS, "Allow completion of trades with faulty delayed " +
+                        "payout transactions")
+                        .withRequiredArg()
+                        .ofType(boolean.class)
+                        .defaultsTo(false);
+
+        ArgumentAcceptingOptionSpec<String> apiPasswordOpt =
+                parser.accepts(API_PASSWORD, "gRPC API password")
+                        .withRequiredArg()
+                        .defaultsTo("");
+
+        ArgumentAcceptingOptionSpec<Integer> apiPortOpt =
+                parser.accepts(API_PORT, "gRPC API port")
+                        .withRequiredArg()
+                        .ofType(Integer.class)
+                        .defaultsTo(9998);
+
         try {
             CompositeOptionSet options = new CompositeOptionSet();
 
             // Parse command line options
             OptionSet cliOpts = parser.parse(args);
             options.addOptionSet(cliOpts);
+
+            // Option parsing is strict at the command line, but we relax it now for any
+            // subsequent config file processing. This is for compatibility with pre-1.2.6
+            // versions that allowed unrecognized options in the bisq.properties config
+            // file and because it follows suit with Bitcoin Core's config file behavior.
+            parser.allowsUnrecognizedOptions();
 
             // Parse config file specified at the command line only if it was specified as
             // an absolute path. Otherwise, the config file will be processed later below.
@@ -681,7 +712,7 @@ public class Config {
             this.providers = options.valuesOf(providersOpt);
             this.seedNodes = options.valuesOf(seedNodesOpt);
             this.banList = options.valuesOf(banListOpt);
-            this.useLocalhostForP2P = options.valueOf(useLocalhostForP2POpt);
+            this.useLocalhostForP2P = this.baseCurrencyNetwork.isMainnet() ? false : options.valueOf(useLocalhostForP2POpt);
             this.maxConnections = options.valueOf(maxConnectionsOpt);
             this.socks5ProxyBtcAddress = options.valueOf(socks5ProxyBtcAddressOpt);
             this.socks5ProxyHttpAddress = options.valueOf(socks5ProxyHttpAddressOpt);
@@ -708,8 +739,11 @@ public class Config {
             this.genesisTxId = options.valueOf(genesisTxIdOpt);
             this.genesisBlockHeight = options.valueOf(genesisBlockHeightOpt);
             this.genesisTotalSupply = options.valueOf(genesisTotalSupplyOpt);
-            this.daoActivated = options.valueOf(daoActivatedOpt) || !baseCurrencyNetwork.isMainnet();
+            this.daoActivated = options.valueOf(daoActivatedOpt);
             this.dumpDelayedPayoutTxs = options.valueOf(dumpDelayedPayoutTxsOpt);
+            this.allowFaultyDelayedTxs = options.valueOf(allowFaultyDelayedTxsOpt);
+            this.apiPassword = options.valueOf(apiPasswordOpt);
+            this.apiPort = options.valueOf(apiPortOpt);
         } catch (OptionException ex) {
             throw new ConfigException("problem parsing option '%s': %s",
                     ex.options().get(0),
@@ -791,14 +825,15 @@ public class Config {
      * nothing if the directory already exists.
      * @return the given directory, now guaranteed to exist
      */
-    private static File mkAppDataDir(File appDataDir) {
-        Path path = appDataDir.toPath();
-        try {
-            Files.createDirectories(path);
-        } catch (IOException ex) {
-            throw new ConfigException(ex, "Application data directory '%s' could not be created", path);
+    private static File mkAppDataDir(File dir) {
+        if (!dir.exists()) {
+            try {
+                Files.createDirectories(dir.toPath());
+            } catch (IOException ex) {
+                throw new UncheckedIOException(format("Application data directory '%s' could not be created", dir), ex);
+            }
         }
-        return appDataDir;
+        return dir;
     }
 
     /**
@@ -809,11 +844,10 @@ public class Config {
     private static File mkdir(File parent, String child) {
         File dir = new File(parent, child);
         if (!dir.exists()) {
-            Path path = dir.toPath();
             try {
-                Files.createDirectory(path);
+                Files.createDirectory(dir.toPath());
             } catch (IOException ex) {
-                throw new ConfigException(ex, "Directory '%s' could not be created", path);
+                throw new UncheckedIOException(format("Directory '%s' could not be created", dir), ex);
             }
         }
         return dir;

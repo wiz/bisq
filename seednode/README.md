@@ -40,10 +40,10 @@ After installation, watch the Bitcoin blockchain sync progress
 sudo tail -f /bitcoin/debug.log
 ```
 
-After Bitcoin is fully synced, start the bisq-seednode service
+After Bitcoin is fully synced, start the bisq service
 ```bash
-sudo systemctl start bisq-seednode
-sudo journalctl --unit bisq-seednode --follow
+sudo systemctl start bisq
+sudo journalctl --unit bisq --follow
 ```
 
 After Bisq is fully synced, check your Bitcoin and Bisq onion hostnames:
@@ -54,12 +54,21 @@ sudo cat /bisq/bisq-seednode/btc_mainnet/tor/hiddenservice/hostname
 
 ### Testing
 
-After your Bisq seednode is ready, test it by connecting to your new btcnode and bisq-seednode!
+After your Bisq seednode is ready, test it by connecting to your new btcnode and bisq!
 
 macOS:
 ```bash
 /Applications/Bisq.app/Contents/MacOS/Bisq --seedNodes=foo.onion:8000 --btcNodes=foo.onion:8333
 ```
+
+### Monitoring
+
+If you run a main seednode, you also are obliged to activate the monitoring feed by running
+
+```bash
+curl -s https://raw.githubusercontent.com/bisq-network/bisq/master/monitor/install_collectd_debian.sh | sudo bash
+```
+Follow the instruction given by the script and report your certificate to the seednode group!
 
 ### Upgrading
 
@@ -72,8 +81,8 @@ git checkout v1.2.5 # new tag
 ./gradlew clean
 ./gradlew build -x test
 exit
-sudo service bisq-seednode restart
-sudo journalctl --unit bisq-seednode --follow
+sudo service bisq restart
+sudo journalctl --unit bisq --follow
 ```
 
 ### Uninstall

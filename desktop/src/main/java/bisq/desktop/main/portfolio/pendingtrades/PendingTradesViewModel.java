@@ -207,6 +207,8 @@ public class PendingTradesViewModel extends ActivatableWithDataModel<PendingTrad
         if ((item == null))
             return "";
 
+        checkNotNull(item.getTrade().getOffer());
+        checkNotNull(item.getTrade().getOffer().getCurrencyCode());
         return CurrencyUtil.getCurrencyPair(item.getTrade().getOffer().getCurrencyCode());
     }
 
@@ -260,6 +262,8 @@ public class PendingTradesViewModel extends ActivatableWithDataModel<PendingTrad
         Contract contract = trade.getContract();
         if (contract != null) {
             Offer offer = trade.getOffer();
+            checkNotNull(offer);
+            checkNotNull(offer.getCurrencyCode());
             return getRole(contract.isBuyerMakerAndSellerTaker(), dataModel.isMaker(offer), offer.getCurrencyCode());
         } else {
             return "";
@@ -270,13 +274,9 @@ public class PendingTradesViewModel extends ActivatableWithDataModel<PendingTrad
         String result = "";
         if (item != null) {
             Offer offer = item.getTrade().getOffer();
-            String method = Res.get(offer.getPaymentMethod().getId() + "_SHORT");
-            String methodCountryCode = offer.getCountryCode();
-
-            if (methodCountryCode != null)
-                result = method + " (" + methodCountryCode + ")";
-            else
-                result = method;
+            checkNotNull(offer);
+            checkNotNull(offer.getPaymentMethod());
+            result = offer.getPaymentMethodNameWithCountryCode();
         }
         return result;
     }
@@ -303,6 +303,7 @@ public class PendingTradesViewModel extends ActivatableWithDataModel<PendingTrad
 
     public String getTradeFee() {
         if (trade != null && dataModel.getOffer() != null && trade.getTradeAmount() != null) {
+            checkNotNull(dataModel.getTrade());
             if (dataModel.isMaker() && dataModel.getOffer().isCurrencyForMakerFeeBtc() ||
                     !dataModel.isMaker() && dataModel.getTrade().isCurrencyForTakerFeeBtc()) {
                 Coin tradeFeeInBTC = dataModel.getTradeFeeInBTC();
@@ -372,6 +373,8 @@ public class PendingTradesViewModel extends ActivatableWithDataModel<PendingTrad
         checkNotNull(trade, "trade must not be null");
         checkNotNull(trade.getOffer(), "offer must not be null");
         AccountAgeWitness myWitness = accountAgeWitnessService.getMyWitness(dataModel.getSellersPaymentAccountPayload());
+
+        accountAgeWitnessService.witnessDebugLog(trade, myWitness);
 
         return accountAgeWitnessService.accountIsSigner(myWitness) &&
                 !accountAgeWitnessService.peerHasSignedWitness(trade) &&

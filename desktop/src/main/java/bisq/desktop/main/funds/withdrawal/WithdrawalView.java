@@ -56,6 +56,7 @@ import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionOutput;
 import org.bitcoinj.wallet.Wallet;
 
 import javax.inject.Inject;
@@ -99,6 +100,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -122,7 +124,7 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
 
     private RadioButton useAllInputsRadioButton, useCustomInputsRadioButton, feeExcludedRadioButton;
     private Label amountLabel;
-    private TextField amountTextField, withdrawFromTextField, withdrawToTextField;
+    private TextField amountTextField, withdrawFromTextField, withdrawToTextField, withdrawMemoTextField;
 
     private final BtcWalletService walletService;
     private final TradeManager tradeManager;
@@ -216,6 +218,10 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
         withdrawToTextField = addTopLabelInputTextField(gridPane, ++rowIndex,
                 Res.get("funds.withdrawal.toLabel", Res.getBaseCurrencyCode())).second;
         withdrawToTextField.setMaxWidth(380);
+
+        withdrawMemoTextField = addTopLabelInputTextField(gridPane, ++rowIndex,
+                Res.get("funds.withdrawal.memoLabel", Res.getBaseCurrencyCode())).second;
+        withdrawMemoTextField.setMaxWidth(380);
 
         final Button withdrawButton = addButton(gridPane, ++rowIndex, Res.get("funds.withdrawal.withdrawButton"), 15);
 
@@ -330,9 +336,28 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
                     feeEstimationTransaction = walletService.getFeeEstimationTransactionForMultipleAddresses(fromAddresses, sendersAmount);
                 }
                 checkNotNull(feeEstimationTransaction, "feeEstimationTransaction must not be null");
-                Coin fee = feeEstimationTransaction.getFee();
-                sendersAmount = feeExcluded ? amountAsCoin.add(fee) : amountAsCoin;
-                Coin receiverAmount = feeExcluded ? amountAsCoin : amountAsCoin.subtract(fee);
+
+                Coin dust = getDust(feeEstimationTransaction);
+                Coin fee = feeEstimationTransaction.getFee().add(dust);
+                Coin receiverAmount = Coin.ZERO;
+                // amountAsCoin is what the user typed into the withdrawal field.
+                // this can be interpreted as either the senders amount or receivers amount depending
+                // on a radio button "fee excluded / fee included".
+                // therefore we calculate the actual sendersAmount and receiverAmount as follows:
+                if (feeExcluded) {
+                    receiverAmount = amountAsCoin;
+                    sendersAmount = receiverAmount.add(fee);
+                } else {
+                    sendersAmount = amountAsCoin.add(dust); // sendersAmount bumped up to UTXO size when dust is in play
+                    receiverAmount = sendersAmount.subtract(fee);
+                }
+                if (dust.isPositive()) {
+                    log.info("Dust output ({} satoshi) was detected, the dust amount has been added to the fee (was {}, now {})",
+                            dust.value,
+                            feeEstimationTransaction.getFee(),
+                            fee.value);
+                }
+
                 if (areInputsValid()) {
                     int txSize = feeEstimationTransaction.bitcoinSerialize().length;
                     log.info("Fee for tx with size {}: {} " + Res.getBaseCurrencyCode() + "", txSize, fee.toPlainString());
@@ -340,20 +365,29 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
                     if (receiverAmount.isPositive()) {
                         double feePerByte = CoinUtil.getFeePerByte(fee, txSize);
                         double kb = txSize / 1000d;
+
+                        String messageText = Res.get("shared.sendFundsDetailsWithFee",
+                            formatter.formatCoinWithCode(sendersAmount),
+                            withdrawFromTextField.getText(),
+                            withdrawToTextField.getText(),
+                            formatter.formatCoinWithCode(fee),
+                            feePerByte,
+                            kb,
+                            formatter.formatCoinWithCode(receiverAmount));
+                        if (dust.isPositive()) {
+                            messageText = Res.get("shared.sendFundsDetailsDust",
+                                dust.value, dust.value > 1 ? "s" : "")
+                                + messageText;
+                        }
+
                         new Popup().headLine(Res.get("funds.withdrawal.confirmWithdrawalRequest"))
-                                .confirmation(Res.get("shared.sendFundsDetailsWithFee",
-                                        formatter.formatCoinWithCode(sendersAmount),
-                                        withdrawFromTextField.getText(),
-                                        withdrawToTextField.getText(),
-                                        formatter.formatCoinWithCode(fee),
-                                        feePerByte,
-                                        kb,
-                                        formatter.formatCoinWithCode(receiverAmount)))
+                                .confirmation(messageText)
                                 .actionButtonText(Res.get("shared.yes"))
                                 .onAction(() -> doWithdraw(sendersAmount, fee, new FutureCallback<>() {
                                     @Override
                                     public void onSuccess(@javax.annotation.Nullable Transaction transaction) {
                                         if (transaction != null) {
+                                            transaction.setMemo(withdrawMemoTextField.getText());
                                             log.debug("onWithdraw onSuccess tx ID:{}", transaction.getHashAsString());
                                         } else {
                                             log.error("onWithdraw transaction is null");
@@ -498,6 +532,9 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
         withdrawToTextField.setText("");
         withdrawToTextField.setPromptText(Res.get("funds.withdrawal.fillDestAddress"));
 
+        withdrawMemoTextField.setText("");
+        withdrawMemoTextField.setPromptText(Res.get("funds.withdrawal.memo"));
+
         selectedItems.clear();
         tableView.getSelectionModel().clearSelection();
     }
@@ -628,6 +665,21 @@ public class WithdrawalView extends ActivatableView<VBox, Void> {
                         };
                     }
                 });
+    }
+
+    // BISQ issue #4039: prevent dust outputs from being created.
+    // check the outputs of a proposed transaction, if any are below the dust threshold
+    // add up the dust, noting the details in the log.
+    // returns the 'dust amount' to indicate if any dust was detected.
+    private Coin getDust(Transaction transaction) {
+        Coin dust = Coin.ZERO;
+        for (TransactionOutput transactionOutput: transaction.getOutputs()) {
+            if (transactionOutput.getValue().isLessThan(Restrictions.getMinNonDustOutput())) {
+                dust = dust.add(transactionOutput.getValue());
+                log.info("dust TXO = {}", transactionOutput.toString());
+            }
+        }
+        return dust;
     }
 }
 

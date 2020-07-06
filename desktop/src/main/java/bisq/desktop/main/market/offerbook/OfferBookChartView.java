@@ -31,6 +31,7 @@ import bisq.desktop.main.offer.BuyOfferView;
 import bisq.desktop.main.offer.SellOfferView;
 import bisq.desktop.main.offer.offerbook.OfferBookListItem;
 import bisq.desktop.util.CurrencyListItem;
+import bisq.desktop.util.DisplayUtils;
 import bisq.desktop.util.GUIUtil;
 
 import bisq.core.locale.CurrencyUtil;
@@ -42,6 +43,7 @@ import bisq.core.util.coin.CoinFormatter;
 
 import bisq.network.p2p.NodeAddress;
 
+import bisq.common.UserThread;
 import bisq.common.config.Config;
 import bisq.common.util.Tuple3;
 import bisq.common.util.Tuple4;
@@ -91,6 +93,7 @@ import javafx.util.StringConverter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static bisq.desktop.util.FormBuilder.addTopLabelAutocompleteComboBox;
@@ -214,7 +217,7 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
         tradeCurrencySubscriber = EasyBind.subscribe(model.selectedTradeCurrencyProperty,
                 tradeCurrency -> {
                     String code = tradeCurrency.getCode();
-                    volumeColumnLabel.set(Res.get("shared.amountWithCur", code));
+                    volumeColumnLabel.set(Res.get("offerbook.volume", code));
                     xAxis.setTickLabelFormatter(new StringConverter<>() {
                         int cryptoPrecision = 3;
 
@@ -280,6 +283,7 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
         sellOfferTableView.getSelectionModel().selectedItemProperty().addListener(sellTableRowSelectionListener);
 
         root.getScene().heightProperty().addListener(bisqWindowVerticalSizeListener);
+        layout();
 
         updateChartData();
     }
@@ -321,13 +325,7 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
             navigation.navigateTo(MainView.class, BuyOfferView.class);
         };
 
-        bisqWindowVerticalSizeListener = (observable, oldValue, newValue) -> {
-            double newTableViewHeight = offerTableViewHeight.apply(newValue.doubleValue());
-            if (buyOfferTableView.getHeight() != newTableViewHeight) {
-                buyOfferTableView.setMinHeight(newTableViewHeight);
-                sellOfferTableView.setMinHeight(newTableViewHeight);
-            }
-        };
+        bisqWindowVerticalSizeListener = (observable, oldValue, newValue) -> layout();
     }
 
     @Override
@@ -502,9 +500,7 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
                                 @Override
                                 public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                                     if (offer != null && offer.getPrice() != null) {
-                                        setText("");
-                                        setGraphic(new ColoredDecimalPlacesWithZerosText(model.getVolume(offer),
-                                                model.getMaxNumberOfPriceZeroDecimalsToColorize(offer)));
+                                        renderCellContentRange();
                                         model.priceFeedService.updateCounterProperty().removeListener(listener);
                                     }
                                 }
@@ -520,9 +516,7 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
                                         model.priceFeedService.updateCounterProperty().addListener(listener);
                                         setText(Res.get("shared.na"));
                                     } else {
-                                        setText("");
-                                        setGraphic(new ColoredDecimalPlacesWithZerosText(model.getVolume(offer),
-                                                model.getMaxNumberOfPriceZeroDecimalsToColorize(offer)));
+                                        renderCellContentRange();
                                     }
                                 } else {
                                     model.priceFeedService.updateCounterProperty().removeListener(listener);
@@ -531,12 +525,25 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
                                     setGraphic(null);
                                 }
                             }
+
+                            /**
+                             * Renders cell content, if it has a single value or a range.
+                             * Should not be called for empty cells
+                             */
+                            private void renderCellContentRange() {
+                                String volumeRange = DisplayUtils.formatVolume(offer, true, 2);
+
+                                setText("");
+                                setGraphic(new ColoredDecimalPlacesWithZerosText(volumeRange,
+                                        model.getMaxNumberOfPriceZeroDecimalsToColorize(offer)));
+                            }
+
                         };
                     }
                 });
 
         // amount
-        TableColumn<OfferListItem, OfferListItem> amountColumn = new AutoTooltipTableColumn<>(Res.get("shared.amountWithCur", Res.getBaseCurrencyCode()));
+        TableColumn<OfferListItem, OfferListItem> amountColumn = new AutoTooltipTableColumn<>(Res.get("shared.BTCMinMax"));
         amountColumn.setMinWidth(115);
         amountColumn.setSortable(false);
         amountColumn.getStyleClass().add("number-column");
@@ -550,8 +557,8 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
                             public void updateItem(final OfferListItem offerListItem, boolean empty) {
                                 super.updateItem(offerListItem, empty);
                                 if (offerListItem != null && !empty) {
-                                    setGraphic(new ColoredDecimalPlacesWithZerosText(formatter.formatCoin(offerListItem.offer.getAmount(),
-                                            4), GUIUtil.AMOUNT_DECIMALS_WITH_ZEROS));
+                                    String amountRange = DisplayUtils.formatAmount(offerListItem.offer, formatter);
+                                    setGraphic(new ColoredDecimalPlacesWithZerosText(amountRange, GUIUtil.AMOUNT_DECIMALS_WITH_ZEROS));
                                 } else {
                                     setGraphic(null);
                                 }
@@ -665,4 +672,16 @@ public class OfferBookChartView extends ActivatableViewAndModel<VBox, OfferBookC
         Collections.reverse(columns);
         sellOfferTableView.getColumns().addAll(columns);
     }
+
+    private void layout() {
+        UserThread.runAfter(() -> {
+            if (root.getScene() != null) {
+                double newTableViewHeight = offerTableViewHeight.apply(root.getScene().getHeight());
+                if (buyOfferTableView.getHeight() != newTableViewHeight) {
+                    buyOfferTableView.setMinHeight(newTableViewHeight);
+                    sellOfferTableView.setMinHeight(newTableViewHeight);
+               }
+            }
+       }, 100, TimeUnit.MILLISECONDS);
+   }
 }
