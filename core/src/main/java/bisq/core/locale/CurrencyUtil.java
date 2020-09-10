@@ -137,6 +137,7 @@ public class CurrencyUtil {
         result.add(new CryptoCurrency("ETH", "Ether"));
         result.add(new CryptoCurrency("GRIN", "Grin"));
         result.add(new CryptoCurrency("L-BTC", "Liquid Bitcoin"));
+        result.add(new CryptoCurrency("USDT", "Tether USD"));
         result.add(new CryptoCurrency("LTC", "Litecoin"));
         result.add(new CryptoCurrency("XMR", "Monero"));
         result.add(new CryptoCurrency("NMC", "Namecoin"));
